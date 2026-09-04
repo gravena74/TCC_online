@@ -69,6 +69,17 @@ const SCHEMA_STATEMENTS = [
     icon          VARCHAR(100)
   ) ENGINE=InnoDB`,
 
+  `CREATE TABLE IF NOT EXISTS vaccines (
+    id            VARCHAR(36) PRIMARY KEY,
+    pet_id        VARCHAR(36) NOT NULL,
+    name          VARCHAR(255) NOT NULL,
+    applied_at    VARCHAR(10) NOT NULL,
+    next_dose_at  VARCHAR(10),
+    notes         TEXT,
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pet_id) REFERENCES pets(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB`,
+
   `CREATE TABLE IF NOT EXISTS addresses (
     id            VARCHAR(36) PRIMARY KEY,
     user_id       VARCHAR(36) NOT NULL,

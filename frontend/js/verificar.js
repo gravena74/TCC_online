@@ -38,7 +38,7 @@ form.addEventListener("submit", async (e) => {
     const { token } = await api.verifyOtp(ctx.phone, code, ctx.name);
     setToken(token);
     sessionStorage.removeItem("cafofo_otp_context");
-    window.location.href = ctx.returnTo || "pets.html";
+    window.location.href = ctx.returnTo || "home.html";
   } catch (err) {
     errorEl.textContent = err.message;
     errorEl.style.display = "block";

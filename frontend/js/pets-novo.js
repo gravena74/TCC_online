@@ -1,6 +1,10 @@
 import { api } from "./api.js";
 import { requireAuth } from "./guard.js";
 
+const isManageMode = new URLSearchParams(window.location.search).get("from") === "manage";
+const backTarget = isManageMode ? "pets.html?mode=manage" : "pets.html";
+document.getElementById("backLink").href = backTarget;
+
 const user = await requireAuth();
 if (user) {
   document.getElementById("authLoading").style.display = "none";
@@ -50,7 +54,7 @@ function init() {
       if (photoFile) formData.append("photo", photoFile);
 
       await api.createPet(formData);
-      window.location.replace("pets.html");
+      window.location.replace(backTarget);
     } catch (err) {
       errorEl.textContent = err.message;
       errorEl.style.display = "block";

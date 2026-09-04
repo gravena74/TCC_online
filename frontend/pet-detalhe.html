@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2E7D4F" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Meu pet — Cafofo do Pet</title>
+  </head>
+  <body>
+    <div class="screen" id="screen" style="display: none;">
+      <div class="top-bar">
+        <a href="pets.html?mode=manage" aria-label="Voltar" class="btn-round">
+          <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+        </a>
+        <h1 style="font-size: 1.25rem; font-weight: 700;" id="screenTitle">Meu pet</h1>
+      </div>
+
+      <p class="text-center" id="loadingMsg" style="margin-top: 2.5rem; font-size: 0.875rem; color: var(--muted);">
+        Carregando...
+      </p>
+      <p class="form-error text-center" id="loadErrorMsg" style="display: none; margin-top: 2.5rem;"></p>
+
+      <div id="content" style="display: none; padding-bottom: 3rem;">
+        <div class="card pet-summary-card" style="margin-top: 1rem;">
+          <div class="pet-summary-card__photo" id="petPhotoWrap">
+            <span class="material-symbols-rounded" aria-hidden="true">pets</span>
+          </div>
+          <div class="pet-summary-card__info">
+            <p class="pet-summary-card__name" id="petName">—</p>
+            <p class="pet-summary-card__meta" id="petMeta">—</p>
+          </div>
+          <button type="button" aria-label="Editar pet" class="btn-round" id="editPetBtn">
+            <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+          </button>
+        </div>
+
+        <div class="top-bar-row" style="margin-top: 2rem;">
+          <p class="section-label" style="margin-bottom: 0;">Vacinas</p>
+          <button type="button" aria-label="Adicionar vacina" class="btn-round btn-round--brand" id="addVaccineBtn">
+            <span class="material-symbols-rounded" aria-hidden="true">add</span>
+          </button>
+        </div>
+
+        <p class="text-center" id="vaccinesLoadingMsg" style="margin-top: 1.5rem; font-size: 0.875rem; color: var(--muted);">
+          Carregando vacinas...
+        </p>
+
+        <div class="empty-state" id="vaccinesEmptyState" style="display: none; margin-top: 2rem;">
+          <div class="empty-state__icon"><span class="material-symbols-rounded" aria-hidden="true">vaccines</span></div>
+          <p class="empty-state__title">Nenhuma vacina cadastrada.</p>
+          <p class="empty-state__subtitle">Toque em "+" para adicionar a primeira vacina.</p>
+        </div>
+
+        <div class="vaccine-list" id="vaccineList" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+    <div class="loading-screen" id="authLoading">
+      <span>Carregando...</span>
+    </div>
+
+    <dialog id="petDialog">
+      <h3 class="dialog-title">Editar pet</h3>
+      <form id="petForm" class="field-stack" style="margin-top: 1rem;">
+        <button type="button" class="photo-upload" id="photoUploadBtn">
+          <span class="material-symbols-rounded" id="photoPlaceholderIcon" aria-hidden="true">image</span>
+          <span class="photo-upload__badge"><span class="material-symbols-rounded" aria-hidden="true">photo_camera</span></span>
+          <input type="file" id="photoInput" accept="image/*" style="display: none;" />
+        </button>
+
+        <input class="input-field" id="name" placeholder="Nome..." />
+
+        <input class="input-field" id="age" placeholder="Idade..." inputmode="numeric" />
+
+        <select class="input-field" id="breed">
+          <option value="" disabled>Selecione a Raça...</option>
+          <option>Golden Retriever</option>
+          <option>Shih Tzu</option>
+          <option>Vira-lata</option>
+          <option>Pomerânia</option>
+          <option>Lulu da Pomerânia</option>
+          <option>Keeshond</option>
+          <option>Samoyed</option>
+          <option>Akita Inu</option>
+          <option>Chow Chow</option>
+          <option>Yorkshire Terrier</option>
+          <option>Poodle</option>
+          <option>Buldogue Francês</option>
+          <option>Pinscher</option>
+          <option>Pug</option>
+          <option>Maltês</option>
+        </select>
+
+        <select class="input-field" id="size">
+          <option value="" disabled>Selecione o Porte...</option>
+          <option>Pequeno</option>
+          <option>Médio</option>
+          <option>Grande</option>
+        </select>
+
+        <p class="form-error" id="petFormError" style="display: none;"></p>
+
+        <div class="dialog-actions">
+          <button type="submit" class="btn-primary" id="savePetBtn">Salvar alterações</button>
+          <button type="button" class="btn-outline" id="cancelPetBtn">Cancelar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="vaccineDialog">
+      <h3 class="dialog-title" id="vaccineDialogTitle">Adicionar vacina</h3>
+      <form id="vaccineForm" class="field-stack" style="margin-top: 1rem;">
+        <input class="input-field" id="vaccineName" placeholder="Nome da vacina..." />
+        <div>
+          <label class="section-label" for="vaccineAppliedAt" style="font-size: 0.75rem;">Data de aplicação</label>
+          <input class="input-field" id="vaccineAppliedAt" type="date" />
+        </div>
+        <div>
+          <label class="section-label" for="vaccineNextDoseAt" style="font-size: 0.75rem;">Próxima dose (opcional)</label>
+          <input class="input-field" id="vaccineNextDoseAt" type="date" />
+        </div>
+        <textarea class="input-field" id="vaccineNotes" placeholder="Observações (opcional)..." rows="3" style="resize: vertical;"></textarea>
+        <p class="form-error" id="vaccineFormError" style="display: none;"></p>
+        <div class="dialog-actions">
+          <button type="submit" class="btn-primary" id="saveVaccineBtn">Salvar</button>
+          <button type="button" class="btn-outline" id="cancelVaccineBtn">Cancelar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="confirmDeleteVaccineDialog">
+      <h3 class="dialog-title">Excluir vacina?</h3>
+      <p class="dialog-message" id="deleteVaccineMessage"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn-danger" id="confirmDeleteVaccineBtn">Sim, excluir</button>
+        <button type="button" class="btn-outline" id="cancelDeleteVaccineBtn">Não, manter</button>
+      </div>
+    </dialog>
+
+    <script type="module" src="js/pet-detalhe.js"></script>
+  </body>
+</html>

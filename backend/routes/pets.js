@@ -35,6 +35,13 @@ router.get("/", asyncHandler(async (req, res) => {
   res.json({ pets });
 }));
 
+// GET /api/pets/:id
+router.get("/:id", asyncHandler(async (req, res) => {
+  const pet = await db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ?`, [req.params.id, req.userId]);
+  if (!pet) return res.status(404).json({ error: "Pet nao encontrado." });
+  res.json({ pet });
+}));
+
 // POST /api/pets  (multipart/form-data: name, breed, age_years, size, photo)
 router.post("/", upload.single("photo"), asyncHandler(async (req, res) => {
   const { name, breed, age_years, size } = req.body;

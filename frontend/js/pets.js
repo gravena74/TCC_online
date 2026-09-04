@@ -2,6 +2,8 @@ import { api } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { updateBooking } from "./booking.js";
 
+const isManageMode = new URLSearchParams(window.location.search).get("mode") === "manage";
+
 const user = await requireAuth();
 if (user) {
   document.getElementById("authLoading").style.display = "none";
@@ -14,11 +16,19 @@ function init() {
   const loadingMsg = document.getElementById("loadingMsg");
   const errorMsg = document.getElementById("errorMsg");
   const emptyState = document.getElementById("emptyState");
+  const advanceBar = document.getElementById("advanceBar");
   const advanceBtn = document.getElementById("advanceBtn");
   const dialog = document.getElementById("confirmDialog");
   const dialogMessage = document.getElementById("dialogMessage");
   const confirmCancelBtn = document.getElementById("confirmCancelBtn");
   const cancelCancelBtn = document.getElementById("cancelCancelBtn");
+
+  if (isManageMode) {
+    document.getElementById("screenTitle").textContent = "Meus Pets";
+    document.title = "Meus Pets — Cafofo do Pet";
+    advanceBar.style.display = "none";
+    document.getElementById("newPetLink").href = "pets-novo.html?from=manage";
+  }
 
   let pets = [];
   let appointmentsByPet = {};
@@ -56,6 +66,7 @@ function init() {
       const appointment = appointmentsByPet[pet.id];
       const isBooked = Boolean(appointment);
       const active = selectedId === pet.id;
+      const disableSelect = !isManageMode && isBooked;
 
       const card = document.createElement("div");
       card.className = `card pet-card${isBooked ? " pet-card--booked" : ""}${active ? " pet-card--selected" : ""}`;
@@ -65,7 +76,7 @@ function init() {
         : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
 
       card.innerHTML = `
-        <button type="button" class="pet-card__select" ${isBooked ? "disabled" : ""}>
+        <button type="button" class="pet-card__select" ${disableSelect ? "disabled" : ""}>
           <div class="pet-card__photo">${photo}</div>
           <div class="pet-card__info">
             <p class="pet-card__name">${pet.name}</p>
@@ -73,15 +84,21 @@ function init() {
             ${isBooked ? `<span class="pet-card__tag">Agendado · aguardando análise</span>` : ""}
           </div>
           ${
-            !isBooked
-              ? `<span class="pet-card__check"><span class="material-symbols-rounded" aria-hidden="true">check</span></span>`
-              : ""
+            isManageMode
+              ? `<span class="material-symbols-rounded" aria-hidden="true">chevron_right</span>`
+              : !isBooked
+                ? `<span class="pet-card__check"><span class="material-symbols-rounded" aria-hidden="true">check</span></span>`
+                : ""
           }
         </button>
-        ${isBooked ? `<button type="button" class="pet-card__cancel">Cancelar</button>` : ""}
+        ${!isManageMode && isBooked ? `<button type="button" class="pet-card__cancel">Cancelar</button>` : ""}
       `;
 
-      if (!isBooked) {
+      if (isManageMode) {
+        card.querySelector(".pet-card__select").addEventListener("click", () => {
+          window.location.href = `pet-detalhe.html?id=${pet.id}`;
+        });
+      } else if (!isBooked) {
         card.querySelector(".pet-card__select").addEventListener("click", () => {
           selectedId = pet.id;
           advanceBtn.disabled = false;

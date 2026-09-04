@@ -46,8 +46,16 @@ export const api = {
   me: () => request("/auth/me"),
 
   getPets: () => request("/pets"),
+  getPet: (id) => request(`/pets/${id}`),
   createPet: (formData) => request("/pets", { method: "POST", body: formData, isFormData: true }),
+  updatePet: (id, formData) => request(`/pets/${id}`, { method: "PUT", body: formData, isFormData: true }),
   deletePet: (id) => request(`/pets/${id}`, { method: "DELETE" }),
+
+  getVaccines: (petId) => request(`/pets/${petId}/vaccines`),
+  createVaccine: (petId, payload) =>
+    request(`/pets/${petId}/vaccines`, { method: "POST", body: payload }),
+  updateVaccine: (id, payload) => request(`/vaccines/${id}`, { method: "PATCH", body: payload }),
+  deleteVaccine: (id) => request(`/vaccines/${id}`, { method: "DELETE" }),
 
   getServices: () => request("/services"),
   getSlots: (serviceId, date) => request(`/services/${serviceId}/slots?date=${date}`),

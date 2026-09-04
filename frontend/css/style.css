@@ -1143,7 +1143,7 @@ img {
 }
 
 /* ===== Diálogo de confirmação ===== */
-dialog#confirmDialog {
+dialog {
   border: none;
   border-radius: 1rem;
   padding: 1.25rem;
@@ -1152,7 +1152,7 @@ dialog#confirmDialog {
   box-shadow: var(--shadow-soft);
 }
 
-dialog#confirmDialog::backdrop {
+dialog::backdrop {
   background: rgba(0, 0, 0, 0.4);
 }
 
@@ -1178,6 +1178,309 @@ dialog#confirmDialog::backdrop {
 .dialog-actions .btn-outline {
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
+}
+
+/* ===== Card de resumo do pet (detalhe) ===== */
+.pet-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.pet-summary-card__photo {
+  height: 3.75rem;
+  width: 3.75rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--brand-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-summary-card__photo .material-symbols-rounded {
+  font-size: 30px;
+  color: var(--brand-300);
+}
+
+.pet-summary-card__photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.pet-summary-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pet-summary-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+}
+
+.pet-summary-card__meta {
+  margin-top: 0.125rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ===== Vacinas (detalhe do pet) ===== */
+.vaccine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vaccine-card__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.vaccine-card__icon {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-50);
+}
+
+.vaccine-card__icon .material-symbols-rounded {
+  font-size: 22px;
+  color: var(--brand-600);
+}
+
+.vaccine-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vaccine-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.vaccine-card__applied {
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.vaccine-card__next {
+  margin-top: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--brand-700);
+}
+
+.vaccine-card__next .material-symbols-rounded {
+  font-size: 16px;
+}
+
+.vaccine-card__notes {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.vaccine-card__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.375rem;
+}
+
+.vaccine-card__actions .btn-round {
+  height: 2rem;
+  width: 2rem;
+}
+
+.vaccine-card__actions .material-symbols-rounded {
+  font-size: 18px;
+}
+
+/* ===== Início (home) ===== */
+.home-screen {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 28rem;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--cream);
+  padding: 1.5rem 1.25rem calc(84px + 1.5rem);
+}
+
+.home-hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  border-radius: 1.25rem;
+  background: #fff;
+  padding-left: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.home-hero__content {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding-bottom: 1.5rem;
+}
+
+.home-hero__title {
+  font-size: 1.625rem;
+  color: var(--brand-700);
+}
+
+.home-hero__subtitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.home-hero__image {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: 9.5rem;
+  height: 11.5rem;
+  overflow: hidden;
+}
+
+.home-hero__image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.home-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.home-section-title h2 {
+  font-size: 1.125rem;
+}
+
+.home-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.home-menu-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 1.5rem;
+  background: #fff;
+  padding: 1.125rem;
+  text-decoration: none;
+  box-shadow: 0 8px 8px rgba(29, 131, 72, 0.04);
+}
+
+.home-menu-card:active {
+  transform: scale(0.99);
+}
+
+.home-menu-card__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1.75rem;
+  background: var(--brand-100);
+}
+
+.home-menu-card__icon .material-symbols-rounded {
+  color: var(--brand-700);
+}
+
+.home-menu-card__text {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.home-menu-card__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--brand-700);
+}
+
+.home-menu-card__subtitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.home-menu-card__chevron {
+  flex-shrink: 0;
+  color: var(--brand-700);
+}
+
+/* ===== Barra de navegação inferior ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  max-width: 28rem;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--brand-100);
+  background: #fff;
+  padding: 0.75rem 1.5rem calc(1.25rem + env(safe-area-inset-bottom, 0));
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.bottom-nav__item .material-symbols-rounded {
+  font-size: 24px;
+}
+
+.bottom-nav__item--active {
+  color: var(--brand-700);
+}
+
+.bottom-nav__item--disabled {
+  opacity: 0.5;
 }
 
 /* ===== Loading ===== */

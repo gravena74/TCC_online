@@ -1,7 +1,7 @@
 import { api } from "./api.js";
 
 const params = new URLSearchParams(window.location.search);
-const returnTo = params.get("returnTo") || "pets.html";
+const returnTo = params.get("returnTo") || "home.html";
 
 if (returnTo === "agendamentos.html") {
   document.getElementById("returnHint").style.display = "block";

@@ -7,6 +7,7 @@ import fs from "fs";
 
 import authRoutes from "./routes/auth.js";
 import petsRoutes from "./routes/pets.js";
+import vaccinesRoutes from "./routes/vaccines.js";
 import servicesRoutes from "./routes/services.js";
 import addressesRoutes from "./routes/addresses.js";
 import appointmentsRoutes from "./routes/appointments.js";
@@ -30,6 +31,7 @@ app.get("/api/health", (req, res) => res.json({ ok: true, service: "cafofo-do-pe
 
 app.use("/api/auth", authRoutes);
 app.use("/api/pets", petsRoutes);
+app.use("/api", vaccinesRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/addresses", addressesRoutes);
 app.use("/api/appointments", appointmentsRoutes);

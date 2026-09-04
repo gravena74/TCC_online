@@ -18,9 +18,12 @@
     <div class="screen" id="screen" style="display: none;">
       <div class="top-bar-row">
         <div class="top-bar" style="padding-top: 1.5rem; margin-bottom: 0;">
-          <h1 style="font-size: 1.25rem; font-weight: 700;">Escolha o pet</h1>
+          <a href="home.html" aria-label="Voltar ao início" class="btn-round">
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          </a>
+          <h1 style="font-size: 1.25rem; font-weight: 700;" id="screenTitle">Escolha o pet</h1>
         </div>
-        <a href="pets-novo.html" aria-label="Cadastrar novo pet" class="btn-round btn-round--brand" style="margin-top: 1.5rem;">
+        <a href="pets-novo.html" aria-label="Cadastrar novo pet" class="btn-round btn-round--brand" style="margin-top: 1.5rem;" id="newPetLink">
           <span class="material-symbols-rounded" aria-hidden="true">add</span>
         </a>
       </div>
@@ -38,7 +41,7 @@
 
       <div class="pet-list" id="petList"></div>
 
-      <div class="footer-bar">
+      <div class="footer-bar" id="advanceBar">
         <button type="button" class="btn-primary" id="advanceBtn" disabled>Avançar</button>
       </div>
     </div>
