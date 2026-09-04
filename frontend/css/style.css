@@ -1,0 +1,1202 @@
+/* ===== Tema (mesmas cores/fontes do design original) ===== */
+:root {
+  --brand-50: #F0FAF3;
+  --brand-100: #DCF3E3;
+  --brand-200: #B3E5C2;
+  --brand-300: #84D49E;
+  --brand-400: #4FBB77;
+  --brand-500: #2E9E5B;
+  --brand-600: #237D48;
+  --brand-700: #1D6339;
+  --brand-800: #184F2F;
+  --brand-900: #143F27;
+  --cream: #F4FBF6;
+  --ink: #1E2B24;
+  --muted: #6C7A72;
+  --radius-xl2: 1.25rem;
+  --shadow-soft: 0 10px 30px -12px rgba(30, 43, 36, 0.18);
+  --font-display: "Baloo 2", system-ui, sans-serif;
+  --font-body: "Nunito Sans", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ===== Ícones (Material Symbols Rounded) ===== */
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  vertical-align: middle;
+}
+
+.icon-inline {
+  font-size: 1.125rem;
+  vertical-align: -0.2em;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--brand-800);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ===== Layout base para telas internas ===== */
+.screen {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 28rem;
+  flex-direction: column;
+  background: var(--cream);
+  padding: 0 1.25rem 2rem;
+}
+
+.top-bar {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+}
+
+.top-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ===== Botões ===== */
+.btn-primary,
+.btn-outline {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.875rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--brand-600);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--brand-600);
+  color: var(--brand-700);
+}
+
+.btn-primary:active,
+.btn-outline:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled,
+.btn-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.btn-primary .material-symbols-rounded,
+.btn-outline .material-symbols-rounded {
+  font-size: 20px;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-round {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--brand-50);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-round:active {
+  transform: scale(0.95);
+}
+
+.btn-round--brand {
+  background: var(--brand-600);
+  border: none;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-round .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--brand-700);
+}
+
+.btn-round--brand .material-symbols-rounded {
+  color: #fff;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--brand-700);
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* ===== Formulários ===== */
+.input-field {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid var(--brand-100);
+  background: #fff;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s ease;
+}
+
+.input-field::placeholder {
+  color: var(--muted);
+}
+
+.input-field:focus {
+  border-color: var(--brand-400);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.field-stack > * + * {
+  margin-top: 0.75rem;
+}
+
+.form-error {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+/* ===== Cartões ===== */
+.card {
+  border-radius: 1rem;
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--brand-50);
+}
+
+/* ===== Barra de ação fixa no rodapé ===== */
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+  background: var(--cream);
+}
+
+.footer-bar--divider {
+  border-top: 1px solid #f3f4f6;
+}
+
+/* ===== Tela de boas-vindas / login / verificação (foto no topo) ===== */
+.photo-shell {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 28rem;
+  flex-direction: column;
+  background: var(--cream);
+}
+
+.photo-shell__img {
+  height: 16rem;
+  width: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.photo-shell__body {
+  position: relative;
+  z-index: 10;
+  margin-top: -2rem;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  border-radius: 2rem 2rem 0 0;
+  background: var(--cream);
+  padding: 2.75rem 1.5rem 2rem;
+  box-shadow: 0 -12px 28px -18px rgba(20, 63, 39, 0.35);
+}
+
+.photo-shell__badge {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  height: 4rem;
+  width: 4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-600);
+  box-shadow: var(--shadow-soft);
+  outline: 4px solid var(--cream);
+}
+
+.photo-shell__badge .material-symbols-rounded {
+  font-size: 32px;
+  color: #fff;
+}
+
+.photo-shell__heading {
+  text-align: center;
+}
+
+.photo-shell__heading h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.photo-shell__heading h1 .accent {
+  color: var(--brand-600);
+}
+
+.photo-shell__tagline {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.photo-shell__content {
+  margin-top: 1.5rem;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+/* ===== Logo (paw) ===== */
+.paw-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.paw-logo__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-600);
+  box-shadow: var(--shadow-soft);
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.paw-logo--lg .paw-logo__icon {
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+.paw-logo__icon .material-symbols-rounded {
+  font-size: 22px;
+  color: #fff;
+}
+
+.paw-logo--lg .paw-logo__icon .material-symbols-rounded {
+  font-size: 32px;
+}
+
+.paw-logo__text {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--brand-800);
+}
+
+.paw-logo--lg .paw-logo__text {
+  font-size: 1.5rem;
+}
+
+/* ===== Boas-vindas: lista de vantagens ===== */
+.perks {
+  margin-top: 1.25rem;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.perks li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-800);
+}
+
+.perks .perk-icon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-100);
+}
+
+.perks .perk-icon .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--brand-700);
+}
+
+/* ===== Código OTP ===== */
+.otp-input {
+  width: 100%;
+  max-width: 12rem;
+  margin: 1.5rem auto 0;
+  display: block;
+  border-radius: 1rem;
+  border: 1px solid var(--brand-100);
+  background: #fff;
+  padding: 0.75rem;
+  text-align: center;
+  letter-spacing: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.otp-input:focus {
+  border-color: var(--brand-400);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.hint {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ===== Estado vazio ===== */
+.empty-state {
+  margin-top: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.empty-state__icon {
+  margin-bottom: 1rem;
+  display: flex;
+  height: 5rem;
+  width: 5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-100);
+}
+
+.empty-state__icon .material-symbols-rounded {
+  font-size: 40px;
+  color: var(--brand-600);
+}
+
+.empty-state__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.empty-state__subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ===== Cartão de pet (seleção) ===== */
+.pet-list {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 6rem;
+}
+
+.pet-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pet-card--booked {
+  background: #f9fafb;
+  opacity: 0.8;
+}
+
+.pet-card--selected {
+  outline: 2px solid var(--brand-500);
+  outline-offset: -1px;
+}
+
+.pet-card__select {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.pet-card__select:disabled {
+  cursor: not-allowed;
+}
+
+.pet-card__photo {
+  height: 3.5rem;
+  width: 3.5rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: var(--brand-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-card__photo .material-symbols-rounded {
+  font-size: 26px;
+  color: var(--brand-300);
+}
+
+.pet-card__photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.pet-card--booked .pet-card__photo {
+  filter: grayscale(1);
+}
+
+.pet-card__info {
+  flex: 1;
+}
+
+.pet-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.pet-card--booked .pet-card__name {
+  color: #6b7280;
+}
+
+.pet-card__meta {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.pet-card__tag {
+  margin-top: 0.25rem;
+  display: inline-block;
+  border-radius: 999px;
+  background: #e5e7eb;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.pet-card__check {
+  display: flex;
+  height: 1.5rem;
+  width: 1.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid var(--brand-200);
+}
+
+.pet-card__check .material-symbols-rounded {
+  font-size: 14px;
+  color: #fff;
+  display: none;
+}
+
+.pet-card--selected .pet-card__check {
+  border-color: var(--brand-600);
+  background: var(--brand-600);
+}
+
+.pet-card--selected .pet-card__check .material-symbols-rounded {
+  display: block;
+}
+
+.pet-card__cancel {
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid #fecaca;
+  background: none;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #dc2626;
+  cursor: pointer;
+}
+
+.pet-card__cancel:active {
+  transform: scale(0.95);
+}
+
+/* ===== Cadastro de pet ===== */
+.photo-upload {
+  position: relative;
+  display: flex;
+  height: 11rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 2px dashed var(--brand-200);
+  background: #fff;
+  padding: 0;
+  cursor: pointer;
+}
+
+.photo-upload img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.photo-upload .material-symbols-rounded {
+  font-size: 48px;
+  color: var(--brand-300);
+}
+
+.photo-upload__badge {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-600);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.photo-upload__badge .material-symbols-rounded {
+  font-size: 18px;
+  color: #fff;
+}
+
+.form-title {
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+}
+
+/* ===== Agendar: serviços e calendário ===== */
+.section-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.pet-summary {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pet-summary__photo {
+  height: 2.75rem;
+  width: 2.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--brand-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-summary__photo .material-symbols-rounded {
+  font-size: 22px;
+  color: var(--brand-300);
+}
+
+.pet-summary__photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.pet-summary__info {
+  flex: 1;
+}
+
+.pet-summary__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pet-summary__breed {
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.service-list {
+  margin-bottom: 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.service-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--brand-100);
+  cursor: pointer;
+}
+
+.service-chip .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.service-chip--active {
+  background: var(--brand-600);
+  color: #fff;
+  border-color: var(--brand-600);
+  box-shadow: var(--shadow-soft);
+}
+
+.calendar-header {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-nav {
+  border: none;
+  background: none;
+  padding: 0 0.5rem;
+  color: var(--brand-600);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.calendar-weekdays,
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.calendar-weekdays {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.calendar-days {
+  margin-top: 0.25rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.calendar-day:hover:not(:disabled) {
+  background: var(--brand-50);
+}
+
+.calendar-day:disabled {
+  color: var(--brand-100);
+  cursor: not-allowed;
+}
+
+.calendar-day--selected {
+  background: var(--brand-600);
+  color: #fff;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.slot-btn {
+  border-radius: 0.75rem;
+  padding: 0.625rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--brand-100);
+  cursor: pointer;
+}
+
+.slot-btn--selected {
+  background: var(--brand-600);
+  color: #fff;
+  border-color: var(--brand-600);
+}
+
+.slot-btn:disabled {
+  background: var(--brand-50);
+  color: var(--brand-200);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* ===== Checkout: opções em cartão (radio) ===== */
+.option-card {
+  display: block;
+  position: relative;
+}
+
+.option-card + .option-card {
+  margin-top: 0.5rem;
+}
+
+.option-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.option-card__label {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--brand-50);
+  cursor: pointer;
+}
+
+.option-card input[type="radio"]:checked + .option-card__label {
+  outline: 2px solid var(--brand-500);
+  outline-offset: -1px;
+}
+
+.option-card__dot {
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+  display: flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid var(--brand-200);
+}
+
+.option-card__dot::after {
+  content: "";
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  background: #fff;
+  display: none;
+}
+
+.option-card input[type="radio"]:checked + .option-card__label .option-card__dot {
+  border-color: var(--brand-600);
+  background: var(--brand-600);
+}
+
+.option-card input[type="radio"]:checked + .option-card__label .option-card__dot::after {
+  display: block;
+}
+
+.option-card__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.option-card__subtitle {
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.address-section {
+  display: none;
+  margin-top: 1.25rem;
+}
+
+/* Mostra o endereço quando qualquer opção de busca/entrega em casa está marcada */
+#checkoutForm:has(input[value="busca_em_casa"]:checked) .address-section,
+#checkoutForm:has(input[value="entrega_em_casa"]:checked) .address-section {
+  display: block;
+}
+
+/* ===== Resumo (checkout summary) ===== */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.summary-row + .summary-row {
+  margin-top: 0.25rem;
+}
+
+.summary-row--total {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--brand-50);
+  padding-top: 0.5rem;
+}
+
+.summary-row--total .summary-label {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.summary-row--total .summary-value {
+  font-weight: 700;
+  color: var(--brand-700);
+}
+
+.summary-label {
+  color: var(--muted);
+}
+
+.check-line {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.check-line .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--brand-600);
+}
+
+.summary-value {
+  font-weight: 600;
+}
+
+/* ===== Sucesso ===== */
+.success-icon {
+  margin-top: 2rem;
+  display: flex;
+  height: 5rem;
+  width: 5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--brand-100);
+}
+
+.success-icon .material-symbols-rounded {
+  font-size: 40px;
+  color: var(--brand-600);
+}
+
+.success-actions {
+  margin-top: 2.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ===== Meus agendamentos ===== */
+.banner {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 1rem;
+  background: var(--brand-100);
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brand-800);
+}
+
+.banner .material-symbols-rounded {
+  font-size: 18px;
+}
+
+.appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.appointment-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.appointment-card__pet {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.appointment-card__photo {
+  height: 2.75rem;
+  width: 2.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--brand-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.appointment-card__photo .material-symbols-rounded {
+  font-size: 22px;
+  color: var(--brand-300);
+}
+
+.appointment-card__photo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.appointment-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.appointment-card__meta {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.status-badge {
+  border-radius: 999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-badge--agendado {
+  background: var(--brand-100);
+  color: var(--brand-700);
+}
+
+.status-badge--concluido {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-badge--cancelado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.appointment-card__bottom {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--brand-50);
+  padding-top: 0.75rem;
+}
+
+.appointment-card__price {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--brand-700);
+}
+
+/* ===== Diálogo de confirmação ===== */
+dialog#confirmDialog {
+  border: none;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  width: calc(100% - 2rem);
+  max-width: 24rem;
+  box-shadow: var(--shadow-soft);
+}
+
+dialog#confirmDialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.dialog-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.dialog-message {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.dialog-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialog-actions .btn-danger,
+.dialog-actions .btn-outline {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+}
+
+/* ===== Loading ===== */
+.loading-screen {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream);
+}
+
+.loading-screen span {
+  font-family: var(--font-display);
+  color: var(--brand-600);
+}
+
+.text-muted-note {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--muted);
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2E7D4F" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Resumo — Cafofo do Pet</title>
+  </head>
+  <body>
+    <div class="screen" id="screen" style="display: none;">
+      <div class="top-bar">
+        <a href="checkout.html" aria-label="Voltar" class="btn-round">
+          <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+        </a>
+        <h1 style="font-size: 1.25rem; font-weight: 700;">Agendar</h1>
+      </div>
+
+      <div class="card pet-summary" style="margin-bottom: 1rem;">
+        <div class="pet-summary__photo" id="petPhoto"></div>
+        <div class="pet-summary__info">
+          <p class="pet-summary__name" id="petName"></p>
+          <p class="pet-summary__breed" id="serviceLine"></p>
+        </div>
+      </div>
+
+      <p class="section-label">Como será o check-in?</p>
+      <div class="card" style="margin-bottom: 1rem;">
+        <p class="check-line" id="checkinLine"></p>
+      </div>
+
+      <p class="section-label">Como será o check-out?</p>
+      <div class="card">
+        <p class="check-line" id="checkoutLine"></p>
+      </div>
+
+      <div class="card" id="addressCard" style="display: none; margin-top: 1rem;">
+        <p style="font-size: 0.875rem; font-weight: 700;">Endereço</p>
+        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: var(--muted);" id="addressLine"></p>
+      </div>
+
+      <div class="card" style="margin-top: 1.25rem;">
+        <p class="section-label">Resumo de valores</p>
+        <div class="summary-row">
+          <span class="summary-label" id="servicePriceLabel"></span>
+          <span class="summary-value" id="servicePriceValue"></span>
+        </div>
+        <div class="summary-row" id="feeRow" style="display: none;">
+          <span class="summary-label">Frete (busca/entrega)</span>
+          <span class="summary-value" id="feeValue"></span>
+        </div>
+        <div class="summary-row summary-row--total">
+          <span class="summary-label">Valor previsto</span>
+          <span class="summary-value" id="totalValue"></span>
+        </div>
+      </div>
+
+      <p class="form-error" id="errorMsg" style="display: none; margin-top: 1rem;"></p>
+
+      <div class="spacer" style="min-height: 1.5rem;"></div>
+
+      <div class="field-stack">
+        <button type="button" class="btn-primary" id="confirmBtn">Avançar</button>
+        <a href="checkout.html" class="btn-outline">Voltar</a>
+      </div>
+    </div>
+
+    <div class="loading-screen" id="authLoading">
+      <span>Carregando...</span>
+    </div>
+
+    <script type="module" src="js/resumo.js"></script>
+  </body>
+</html>
