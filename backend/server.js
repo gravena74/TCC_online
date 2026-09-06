@@ -11,6 +11,8 @@ import vaccinesRoutes from "./routes/vaccines.js";
 import servicesRoutes from "./routes/services.js";
 import addressesRoutes from "./routes/addresses.js";
 import appointmentsRoutes from "./routes/appointments.js";
+import adminAuthRoutes from "./routes/adminAuth.js";
+import adminRoutes from "./routes/admin.js";
 import { initDatabase } from "./db/database.js";
 import { seed } from "./db/seed.js";
 
@@ -31,10 +33,16 @@ app.get("/api/health", (req, res) => res.json({ ok: true, service: "cafofo-do-pe
 
 app.use("/api/auth", authRoutes);
 app.use("/api/pets", petsRoutes);
-app.use("/api", vaccinesRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/addresses", addressesRoutes);
 app.use("/api/appointments", appointmentsRoutes);
+app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/admin", adminRoutes);
+// Fica por ultimo: usa o prefixo generico "/api" (rotas aninhadas de
+// pets/:petId/vaccines e vaccines/:id) e aplica requireAuth a tudo que
+// receber, entao precisa vir depois de qualquer rota mais especifica —
+// caso contrario intercepta (e bloqueia com 401) todo o resto da API.
+app.use("/api", vaccinesRoutes);
 
 app.use((req, res) => res.status(404).json({ error: "Rota nao encontrada." }));
 

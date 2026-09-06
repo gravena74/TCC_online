@@ -36,6 +36,15 @@ const SCHEMA_STATEMENTS = [
     id            VARCHAR(36) PRIMARY KEY,
     phone         VARCHAR(20) UNIQUE NOT NULL,
     name          VARCHAR(255),
+    status        VARCHAR(20) NOT NULL DEFAULT 'pendente',
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  ) ENGINE=InnoDB`,
+
+  `CREATE TABLE IF NOT EXISTS admins (
+    id            VARCHAR(36) PRIMARY KEY,
+    username      VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    name          VARCHAR(255),
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   ) ENGINE=InnoDB`,
 
@@ -119,6 +128,13 @@ const SCHEMA_STATEMENTS = [
 export async function initDatabase() {
   for (const statement of SCHEMA_STATEMENTS) {
     await pool.query(statement);
+  }
+
+  // Migracao leve: adiciona a coluna "status" em bases criadas antes dela existir.
+  try {
+    await pool.query(`ALTER TABLE users ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pendente'`);
+  } catch (err) {
+    if (err.code !== "ER_DUP_FIELDNAME") throw err;
   }
 }
 

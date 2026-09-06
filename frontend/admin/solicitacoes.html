@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1D6339" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <title>Solicitações — Painel Admin</title>
+  </head>
+  <body class="admin-body">
+    <aside class="admin-sidebar" id="adminSidebar"></aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="adminTopbar"></header>
+
+      <main class="admin-content">
+        <section class="admin-panel">
+          <div class="admin-panel__head">
+            <h2>Solicitações de clientes</h2>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="filter-btn" data-filter="pendente">Em análise</button>
+              <button type="button" class="filter-btn" data-filter="aprovado">Aprovados</button>
+              <button type="button" class="filter-btn" data-filter="reprovado">Reprovados</button>
+              <button type="button" class="filter-btn" data-filter="todos">Todos</button>
+            </div>
+          </div>
+          <div id="clientsLoading" class="admin-empty">Carregando...</div>
+          <div class="admin-table-wrap" id="clientsTableWrap" style="display: none;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Telefone</th>
+                  <th>Agendamentos</th>
+                  <th>Cadastrado em</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="admin-empty" id="clientsEmpty" style="display: none;">Nenhum cliente encontrado.</div>
+        </section>
+      </main>
+    </div>
+
+    <style>
+      .filter-btn {
+        border: 1px solid var(--brand-100);
+        background: #fff;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 0.375rem 0.875rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .filter-btn--active {
+        background: var(--brand-600);
+        border-color: var(--brand-600);
+        color: #fff;
+      }
+    </style>
+
+    <script type="module" src="js/admin-solicitacoes.js"></script>
+  </body>
+</html>
