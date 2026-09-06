@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./config.js";
+import { API_BASE_URL, API_ORIGIN } from "./config.js";
 
 const TOKEN_KEY = "cafofo_token";
 
@@ -12,6 +12,23 @@ export function setToken(token) {
 
 export function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
+}
+
+// Encerra a sessão local por completo: remove o token e todo o estado de
+// navegação guardado em sessionStorage (agendamento em andamento, contexto de
+// OTP, último agendamento confirmado), pra não vazar pro próximo login no
+// mesmo navegador/aparelho.
+export function logout() {
+  clearToken();
+  sessionStorage.clear();
+}
+
+// Caminhos vindos da API (ex: foto do pet) voltam relativos ("/uploads/x.jpg"),
+// servidos pelo backend — que pode estar em uma origem diferente da do
+// frontend estático. Resolve para URL absoluta usando a origem da API.
+export function resolveAssetUrl(url) {
+  if (!url) return url;
+  return /^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`;
 }
 
 async function request(path, { method = "GET", body, isFormData = false } = {}) {
@@ -44,6 +61,7 @@ export const api = {
   verifyOtp: (phone, code, name) =>
     request("/auth/verify-otp", { method: "POST", body: { phone, code, name } }),
   me: () => request("/auth/me"),
+  updateMe: (payload) => request("/auth/me", { method: "PATCH", body: payload }),
 
   getPets: () => request("/pets"),
   getPet: (id) => request(`/pets/${id}`),

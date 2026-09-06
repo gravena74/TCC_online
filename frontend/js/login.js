@@ -1,4 +1,5 @@
 import { api } from "./api.js";
+import { maskPhone } from "./masks.js";
 
 const params = new URLSearchParams(window.location.search);
 const returnTo = params.get("returnTo") || "home.html";
@@ -10,6 +11,11 @@ if (returnTo === "agendamentos.html") {
 const form = document.getElementById("loginForm");
 const errorEl = document.getElementById("formError");
 const submitBtn = document.getElementById("submitBtn");
+const phoneInput = document.getElementById("phone");
+
+phoneInput.addEventListener("input", () => {
+  phoneInput.value = maskPhone(phoneInput.value);
+});
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();

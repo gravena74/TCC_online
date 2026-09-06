@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { updateBooking } from "./booking.js";
 
@@ -28,6 +28,9 @@ function init() {
     document.title = "Meus Pets — Cafofo do Pet";
     advanceBar.style.display = "none";
     document.getElementById("newPetLink").href = "pets-novo.html?from=manage";
+    // Modo agendamento já usa o rodapé fixo pro botão "Avançar" — o nav só
+    // aparece no modo gerenciar, pra não sobrepor os dois.
+    document.getElementById("bottomNav").style.display = "flex";
   }
 
   let pets = [];
@@ -69,10 +72,10 @@ function init() {
       const disableSelect = !isManageMode && isBooked;
 
       const card = document.createElement("div");
-      card.className = `card pet-card${isBooked ? " pet-card--booked" : ""}${active ? " pet-card--selected" : ""}`;
+      card.className = `card pet-card${disableSelect ? " pet-card--booked" : ""}${active ? " pet-card--selected" : ""}`;
 
       const photo = pet.photo_url
-        ? `<img src="${pet.photo_url}" alt="${pet.name}">`
+        ? `<img src="${resolveAssetUrl(pet.photo_url)}" alt="${pet.name}">`
         : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
 
       card.innerHTML = `

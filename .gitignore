@@ -5,5 +5,7 @@ dist/
 *.sqlite3-journal
 *.sqlite3-wal
 *.sqlite3-shm
-uploads/*
-!uploads/.gitkeep
+**/uploads/*
+!**/uploads/.gitkeep
+.claude/
+*.log

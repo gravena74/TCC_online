@@ -15,7 +15,7 @@
     <title>Escolha o pet — Cafofo do Pet</title>
   </head>
   <body>
-    <div class="screen" id="screen" style="display: none;">
+    <div class="screen screen--with-bottom-nav" id="screen" style="display: none;">
       <div class="top-bar-row">
         <div class="top-bar" style="padding-top: 1.5rem; margin-bottom: 0;">
           <a href="home.html" aria-label="Voltar ao início" class="btn-round">
@@ -44,6 +44,29 @@
       <div class="footer-bar" id="advanceBar">
         <button type="button" class="btn-primary" id="advanceBtn" disabled>Avançar</button>
       </div>
+
+      <nav class="bottom-nav" id="bottomNav" style="display: none;">
+        <a href="home.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">home</span>
+          <span>Início</span>
+        </a>
+        <a href="pets.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">calendar_add_on</span>
+          <span>Agendar</span>
+        </a>
+        <a href="pets.html?mode=manage" class="bottom-nav__item bottom-nav__item--active">
+          <span class="material-symbols-rounded" aria-hidden="true">pets</span>
+          <span>Pets</span>
+        </a>
+        <a href="agendamentos.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">schedule</span>
+          <span>Histórico</span>
+        </a>
+        <a href="perfil.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
+          <span>Perfil</span>
+        </a>
+      </nav>
     </div>
 
     <div class="loading-screen" id="authLoading">

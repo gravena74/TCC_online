@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <title>Agendar — Cafofo do Pet</title>
   </head>
   <body>
@@ -73,18 +74,29 @@
         </div>
 
         <div class="address-section">
-          <p class="section-label">Endereço para busca/entrega</p>
+          <div class="address-section__header">
+            <p class="section-label">Endereço para busca/entrega</p>
+            <button type="button" class="btn-link address-geo-btn" id="useLocationBtn">
+              <span class="material-symbols-rounded" aria-hidden="true">my_location</span> Usar minha localização
+            </button>
+          </div>
           <div class="card field-stack">
             <div class="field-row">
-              <input class="input-field" id="cep" placeholder="CEP" />
+              <input class="input-field" id="cep" placeholder="CEP" inputmode="numeric" autocomplete="postal-code" />
               <input class="input-field" id="state" placeholder="UF" maxlength="2" style="text-transform: uppercase;" />
             </div>
+            <p class="form-hint" id="cepStatus" style="display: none;"></p>
             <input class="input-field" id="street" placeholder="Rua" />
             <div class="field-row">
               <input class="input-field" id="number" placeholder="Número" />
               <input class="input-field" id="neighborhood" placeholder="Bairro" />
             </div>
             <input class="input-field" id="city" placeholder="Cidade" />
+          </div>
+
+          <div class="map-card" id="mapCard" style="display: none;">
+            <div id="addressMap" class="address-map"></div>
+            <p class="map-card__caption" id="mapCaption"></p>
           </div>
         </div>
 
@@ -103,6 +115,22 @@
       <span>Carregando...</span>
     </div>
 
+    <dialog id="locationDialog">
+      <h3 class="dialog-title">Usar minha localização</h3>
+      <p class="dialog-message" id="locationDialogMessage">
+        Vamos pedir ao navegador acesso à sua localização para tentar preencher o endereço automaticamente.
+      </p>
+      <div class="location-dialog__status" id="locationStatus" style="display: none;">
+        <span class="material-symbols-rounded" aria-hidden="true" id="locationStatusIcon">location_searching</span>
+        <span id="locationStatusText">Obtendo localização...</span>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn-primary" id="locationAllowBtn">Permitir e localizar</button>
+        <button type="button" class="btn-outline" id="locationCancelBtn">Cancelar</button>
+      </div>
+    </dialog>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script type="module" src="js/checkout.js"></script>
   </body>
 </html>

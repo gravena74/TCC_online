@@ -15,9 +15,9 @@
     <title>Meus agendamentos — Cafofo do Pet</title>
   </head>
   <body>
-    <div class="screen" id="screen" style="display: none;">
+    <div class="screen screen--with-bottom-nav" id="screen" style="display: none;">
       <div class="top-bar">
-        <a href="pets.html" aria-label="Voltar" class="btn-round">
+        <a href="home.html" aria-label="Voltar" class="btn-round">
           <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
         </a>
         <h1 style="font-size: 1.25rem; font-weight: 700;">Meus agendamentos</h1>
@@ -39,6 +39,29 @@
       </div>
 
       <div class="appointment-list" id="appointmentList"></div>
+
+      <nav class="bottom-nav">
+        <a href="home.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">home</span>
+          <span>Início</span>
+        </a>
+        <a href="pets.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">calendar_add_on</span>
+          <span>Agendar</span>
+        </a>
+        <a href="pets.html?mode=manage" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">pets</span>
+          <span>Pets</span>
+        </a>
+        <a href="agendamentos.html" class="bottom-nav__item bottom-nav__item--active">
+          <span class="material-symbols-rounded" aria-hidden="true">schedule</span>
+          <span>Histórico</span>
+        </a>
+        <a href="perfil.html" class="bottom-nav__item">
+          <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
+          <span>Perfil</span>
+        </a>
+      </nav>
     </div>
 
     <div class="loading-screen" id="authLoading">

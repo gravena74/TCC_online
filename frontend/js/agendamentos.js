@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { formatCents, formatDateLong } from "./format.js";
 
@@ -42,7 +42,7 @@ function init() {
     for (const a of appointments) {
       const status = STATUS_LABEL[a.status] || STATUS_LABEL.agendado;
       const photo = a.pet_photo
-        ? `<img src="${a.pet_photo}" alt="${a.pet_name}">`
+        ? `<img src="${resolveAssetUrl(a.pet_photo)}" alt="${a.pet_name}">`
         : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
 
       const card = document.createElement("div");

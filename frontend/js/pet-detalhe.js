@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 
 const petId = new URLSearchParams(window.location.search).get("id");
@@ -96,7 +96,7 @@ function init() {
     petMetaEl.textContent = metaParts.join(" · ");
 
     petPhotoWrap.innerHTML = pet.photo_url
-      ? `<img src="${pet.photo_url}" alt="${pet.name}">`
+      ? `<img src="${resolveAssetUrl(pet.photo_url)}" alt="${pet.name}">`
       : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
   }
 
@@ -108,7 +108,7 @@ function init() {
     `;
     if (pet && pet.photo_url) {
       const img = document.createElement("img");
-      img.src = pet.photo_url;
+      img.src = resolveAssetUrl(pet.photo_url);
       img.alt = pet.name;
       photoBtn.querySelector(".material-symbols-rounded").replaceWith(img);
     }

@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { getBooking, updateBooking } from "./booking.js";
 import { formatCents, toIsoDate } from "./format.js";
@@ -51,7 +51,7 @@ function init(booking) {
   // Resumo do pet
   document.getElementById("petSummary").style.display = "flex";
   document.getElementById("petSummaryPhoto").innerHTML = booking.pet.photo_url
-    ? `<img src="${booking.pet.photo_url}" alt="${booking.pet.name}">`
+    ? `<img src="${resolveAssetUrl(booking.pet.photo_url)}" alt="${booking.pet.name}">`
     : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
   document.getElementById("petSummaryName").textContent = booking.pet.name;
   document.getElementById("petSummaryBreed").textContent = booking.pet.breed || "";
