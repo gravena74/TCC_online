@@ -1,5 +1,5 @@
 // Substitua esta URL pelo link público exato do seu backend no Render
-const DEFAULT_API_ORIGIN = "https://tcc-backend.onrender.com";
+const DEFAULT_API_ORIGIN = "https://tcc-online.onrender.com";
 
 // Origem (sem "/api") usada para resolver caminhos relativos vindos da API,
 // como as fotos de pet (/uploads/xxx.jpg).
