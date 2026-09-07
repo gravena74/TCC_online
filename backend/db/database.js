@@ -7,8 +7,8 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  // Algumas nuvens exigem SSL. Se tiver erro de conexão, adicione a linha abaixo:
-  // ssl: { rejectUnauthorized: false }
+  // Aiven (e a maioria dos provedores de MySQL na nuvem) exige conexao via SSL.
+  ssl: { rejectUnauthorized: false },
 });
 
 // Camada de compatibilidade com a API que o resto do projeto ja usava
