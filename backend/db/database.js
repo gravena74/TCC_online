@@ -1,3 +1,4 @@
+import "dotenv/config";
 import mysql from "mysql2/promise";
 
 const pool = mysql.createPool({
@@ -5,7 +6,9 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  port: process.env.DB_PORT,
+  // Algumas nuvens exigem SSL. Se tiver erro de conexão, adicione a linha abaixo:
+  // ssl: { rejectUnauthorized: false }
 });
 
 // Camada de compatibilidade com a API que o resto do projeto ja usava
