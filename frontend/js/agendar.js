@@ -3,9 +3,12 @@ import { requireAuth } from "./guard.js";
 import { getBooking, updateBooking } from "./booking.js";
 import { formatCents, toIsoDate } from "./format.js";
 
-function serviceIcon(name) {
-  return name.includes("Tosa") ? "content_cut" : "bathtub";
+const SERVICE_ICONS = { Banho: "bathtub", Tosa: "content_cut" };
+
+function displayServiceName(name) {
+  return name.replace(/^(Pequeno|Médio|Grande)\s*-\s*/, "");
 }
+
 const MONTHS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
@@ -65,8 +68,9 @@ function init(booking) {
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = `service-chip${active ? " service-chip--active" : ""}`;
-      const iconName = serviceIcon(service.name);
-      chip.innerHTML = `<span class="material-symbols-rounded" aria-hidden="true">${iconName}</span> ${service.name}`;
+      const displayName = displayServiceName(service.name);
+      const iconName = displayName.includes("Tosa") ? SERVICE_ICONS.Tosa : SERVICE_ICONS.Banho;
+      chip.innerHTML = `<span class="material-symbols-rounded" aria-hidden="true">${iconName}</span> ${displayName}`;
       chip.addEventListener("click", () => {
         selectedService = service;
         selectedTime = null;
@@ -160,7 +164,7 @@ function init(booking) {
     advanceBtn.disabled = !canAdvance;
     if (selectedService && selectedTime) {
       summaryLine.style.display = "block";
-      summaryLine.textContent = `Resumo: ${selectedService.name} · ${selectedTime} · ${formatCents(selectedService.price_cents)}`;
+      summaryLine.textContent = `Resumo: ${displayServiceName(selectedService.name)} · ${selectedTime} · ${formatCents(selectedService.price_cents)}`;
     } else {
       summaryLine.style.display = "none";
     }
