@@ -47,7 +47,7 @@ function init() {
         pets = petsRes.pets;
         appointmentsByPet = {};
         for (const appt of apptsRes.appointments) {
-          if (appt.status !== "agendado") continue;
+          if (appt.status !== "agendado" && appt.status !== "em_analise") continue;
           if (!appointmentsByPet[appt.pet_id]) appointmentsByPet[appt.pet_id] = appt;
         }
         render();
@@ -84,7 +84,13 @@ function init() {
           <div class="pet-card__info">
             <p class="pet-card__name">${pet.name}</p>
             <p class="pet-card__meta">${pet.breed || "Sem raça definida"}${pet.age_years ? ` · ${pet.age_years} anos` : ""}</p>
-            ${isBooked ? `<span class="pet-card__tag">Agendado · aguardando análise</span>` : ""}
+            ${
+              isBooked
+                ? `<span class="pet-card__tag">${
+                    appointment.status === "em_analise" ? "Agendado · aguardando análise" : "Agendado · confirmado"
+                  }</span>`
+                : ""
+            }
           </div>
           ${
             isManageMode

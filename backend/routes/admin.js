@@ -6,7 +6,9 @@ import { asyncHandler } from "../middleware/asyncHandler.js";
 const router = Router();
 router.use(requireAdminAuth);
 
-const CLIENT_STATUSES = ["pendente", "aprovado", "reprovado"];
+const APPOINTMENT_STATUSES = ["em_analise", "agendado", "concluido", "cancelado", "recusado"];
+// Estados que contam como negocio confirmado (usados nos graficos/estatisticas).
+const CONFIRMED_STATUSES = "('agendado', 'concluido')";
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
@@ -23,17 +25,32 @@ function last12Months() {
   return months;
 }
 
+// Campos completos do pet, dono e endereco de busca/entrega, para o modal de
+// detalhes do agendamento no painel admin.
+const APPOINTMENT_DETAIL_SELECT = `
+  a.*, u.name as client_name, u.phone as client_phone,
+  p.name as pet_name, p.photo_url as pet_photo_url, p.breed as pet_breed,
+  p.age_years as pet_age_years, p.size as pet_size,
+  p.has_fleas_ticks as pet_has_fleas_ticks, p.has_allergy as pet_has_allergy,
+  p.allows_perfume as pet_allows_perfume, p.been_to_petshop as pet_been_to_petshop,
+  p.is_aggressive as pet_is_aggressive, p.has_fur_knots as pet_has_fur_knots,
+  s.name as service_name,
+  ad.street as address_street, ad.number as address_number,
+  ad.neighborhood as address_neighborhood, ad.city as address_city,
+  ad.state as address_state, ad.cep as address_cep
+`;
+
 // GET /api/admin/appointments/today
 router.get("/appointments/today", asyncHandler(async (req, res) => {
   const date = todayIso();
   const appointments = await db.all(
-    `SELECT a.*, u.name as client_name, u.phone as client_phone,
-            p.name as pet_name, s.name as service_name
+    `SELECT ${APPOINTMENT_DETAIL_SELECT}
      FROM appointments a
      JOIN users u ON u.id = a.user_id
      JOIN pets p ON p.id = a.pet_id
      JOIN services s ON s.id = a.service_id
-     WHERE a.date = ? AND a.status != 'cancelado'
+     LEFT JOIN addresses ad ON ad.id = a.address_id
+     WHERE a.date = ? AND a.status NOT IN ('cancelado', 'recusado')
      ORDER BY a.time ASC`,
     [date]
   );
@@ -44,13 +61,13 @@ router.get("/appointments/today", asyncHandler(async (req, res) => {
 router.get("/appointments", asyncHandler(async (req, res) => {
   const date = req.query.date || todayIso();
   const appointments = await db.all(
-    `SELECT a.*, u.name as client_name, u.phone as client_phone,
-            p.name as pet_name, s.name as service_name
+    `SELECT ${APPOINTMENT_DETAIL_SELECT}
      FROM appointments a
      JOIN users u ON u.id = a.user_id
      JOIN pets p ON p.id = a.pet_id
      JOIN services s ON s.id = a.service_id
-     WHERE a.date = ? AND a.status != 'cancelado'
+     LEFT JOIN addresses ad ON ad.id = a.address_id
+     WHERE a.date = ? AND a.status NOT IN ('cancelado', 'recusado')
      ORDER BY a.time ASC`,
     [date]
   );
@@ -63,44 +80,64 @@ router.get("/appointments/calendar", asyncHandler(async (req, res) => {
   const rows = await db.all(
     `SELECT date, COUNT(*) as count
      FROM appointments
-     WHERE date LIKE ? AND status != 'cancelado'
+     WHERE date LIKE ? AND status NOT IN ('cancelado', 'recusado')
      GROUP BY date`,
     [`${month}-%`]
   );
   res.json({ month, days: rows });
 }));
 
-// GET /api/admin/clients
-router.get("/clients", asyncHandler(async (req, res) => {
-  const clients = await db.all(
-    `SELECT u.id, u.name, u.phone, u.status, u.created_at,
-            (SELECT COUNT(*) FROM appointments a WHERE a.user_id = u.id) as appointments_count
-     FROM users u
-     ORDER BY u.created_at DESC`
+// GET /api/admin/appointments/pending  (agendamentos aguardando analise, para o dashboard)
+router.get("/appointments/pending", asyncHandler(async (req, res) => {
+  const appointments = await db.all(
+    `SELECT ${APPOINTMENT_DETAIL_SELECT}
+     FROM appointments a
+     JOIN users u ON u.id = a.user_id
+     JOIN pets p ON p.id = a.pet_id
+     JOIN services s ON s.id = a.service_id
+     LEFT JOIN addresses ad ON ad.id = a.address_id
+     WHERE a.status = 'em_analise'
+     ORDER BY a.date ASC, a.time ASC`
   );
-  res.json({ clients });
+  res.json({ appointments });
 }));
 
-// GET /api/admin/clients/pending
-router.get("/clients/pending", asyncHandler(async (req, res) => {
-  const clients = await db.all(
-    `SELECT id, name, phone, status, created_at FROM users WHERE status = 'pendente' ORDER BY created_at DESC`
+// GET /api/admin/appointments/review  (tela de Solicitacoes: em analise, agendados e recusados)
+router.get("/appointments/review", asyncHandler(async (req, res) => {
+  const appointments = await db.all(
+    `SELECT ${APPOINTMENT_DETAIL_SELECT}
+     FROM appointments a
+     JOIN users u ON u.id = a.user_id
+     JOIN pets p ON p.id = a.pet_id
+     JOIN services s ON s.id = a.service_id
+     LEFT JOIN addresses ad ON ad.id = a.address_id
+     WHERE a.status IN ('em_analise', 'agendado', 'recusado')
+     ORDER BY a.created_at DESC`
   );
-  res.json({ clients });
+  res.json({ appointments });
 }));
 
-// PATCH /api/admin/clients/:id/status  { status }
-router.patch("/clients/:id/status", asyncHandler(async (req, res) => {
+// PATCH /api/admin/appointments/:id/status  { status }  (aprovar/recusar agendamento em analise)
+router.patch("/appointments/:id/status", asyncHandler(async (req, res) => {
   const { status } = req.body;
-  if (!CLIENT_STATUSES.includes(status)) {
+  if (!APPOINTMENT_STATUSES.includes(status)) {
     return res.status(400).json({ error: "Status invalido." });
   }
 
-  const result = await db.run(`UPDATE users SET status = ? WHERE id = ?`, [status, req.params.id]);
-  if (result.changes === 0) return res.status(404).json({ error: "Cliente nao encontrado." });
+  const result = await db.run(`UPDATE appointments SET status = ? WHERE id = ?`, [status, req.params.id]);
+  if (result.changes === 0) return res.status(404).json({ error: "Agendamento nao encontrado." });
 
-  const client = await db.get(`SELECT id, name, phone, status, created_at FROM users WHERE id = ?`, [req.params.id]);
-  res.json({ client });
+  const appointment = await db.get(
+    `SELECT ${APPOINTMENT_DETAIL_SELECT}
+     FROM appointments a
+     JOIN users u ON u.id = a.user_id
+     JOIN pets p ON p.id = a.pet_id
+     JOIN services s ON s.id = a.service_id
+     LEFT JOIN addresses ad ON ad.id = a.address_id
+     WHERE a.id = ?`,
+    [req.params.id]
+  );
+  res.json({ appointment });
 }));
 
 // GET /api/admin/analytics
@@ -112,13 +149,13 @@ router.get("/analytics", asyncHandler(async (req, res) => {
   const [demandRows, revenueRows, pickupRows, clientsRows, totals, pending] = await Promise.all([
     db.all(
       `SELECT DATE_FORMAT(date, '%Y-%m') as month, COUNT(*) as count
-       FROM appointments WHERE status != 'cancelado' AND date >= ?
+       FROM appointments WHERE status IN ${CONFIRMED_STATUSES} AND date >= ?
        GROUP BY month`,
       [sinceDate]
     ),
     db.all(
       `SELECT DATE_FORMAT(date, '%Y-%m') as month, COALESCE(SUM(total_cents),0) as total_cents
-       FROM appointments WHERE status != 'cancelado' AND date >= ?
+       FROM appointments WHERE status IN ${CONFIRMED_STATUSES} AND date >= ?
        GROUP BY month`,
       [sinceDate]
     ),
@@ -126,22 +163,22 @@ router.get("/analytics", asyncHandler(async (req, res) => {
       `SELECT DATE_FORMAT(date, '%Y-%m') as month,
               COALESCE(SUM(pickup_fee_cents),0) as total_cents,
               SUM(CASE WHEN pickup_fee_cents > 0 THEN 1 ELSE 0 END) as count
-       FROM appointments WHERE status != 'cancelado' AND date >= ?
+       FROM appointments WHERE status IN ${CONFIRMED_STATUSES} AND date >= ?
        GROUP BY month`,
       [sinceDate]
     ),
     db.all(
       `SELECT DATE_FORMAT(date, '%Y-%m') as month, COUNT(DISTINCT user_id) as count
-       FROM appointments WHERE status != 'cancelado' AND date >= ?
+       FROM appointments WHERE status IN ${CONFIRMED_STATUSES} AND date >= ?
        GROUP BY month`,
       [sinceDate]
     ),
     db.get(
       `SELECT COUNT(*) as appointments, COALESCE(SUM(total_cents),0) as revenue_cents,
               COUNT(DISTINCT user_id) as unique_clients
-       FROM appointments WHERE status != 'cancelado'`
+       FROM appointments WHERE status IN ${CONFIRMED_STATUSES}`
     ),
-    db.get(`SELECT COUNT(*) as c FROM users WHERE status = 'pendente'`),
+    db.get(`SELECT COUNT(*) as c FROM appointments WHERE status = 'em_analise'`),
   ]);
 
   const toMap = (rows, key) => Object.fromEntries(rows.map((r) => [r.month, r[key]]));
@@ -164,7 +201,7 @@ router.get("/analytics", asyncHandler(async (req, res) => {
       appointments: totals.appointments,
       revenueCents: totals.revenue_cents,
       uniqueClients: totals.unique_clients,
-      pendingClients: pending.c,
+      pendingAppointments: pending.c,
     },
   });
 }));

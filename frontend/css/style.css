@@ -1193,6 +1193,16 @@ img {
   color: #b91c1c;
 }
 
+.status-badge--em_analise {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge--recusado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .appointment-card__bottom {
   margin-top: 0.75rem;
   display: flex;

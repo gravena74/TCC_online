@@ -44,7 +44,7 @@ router.post("/", asyncHandler(async (req, res) => {
   if (!service) return res.status(404).json({ error: "Servico nao encontrado." });
 
   const conflict = await db.get(
-    `SELECT id FROM appointments WHERE service_id = ? AND date = ? AND time = ? AND status != 'cancelado'`,
+    `SELECT id FROM appointments WHERE service_id = ? AND date = ? AND time = ? AND status NOT IN ('cancelado', 'recusado')`,
     [service_id, date, time]
   );
   if (conflict) return res.status(409).json({ error: "Este horario acabou de ser reservado. Escolha outro." });
@@ -53,12 +53,14 @@ router.post("/", asyncHandler(async (req, res) => {
   const pickupFee = needsPickupFee ? PICKUP_FEE_CENTS : 0;
   const total = service.price_cents + pickupFee;
 
+  // Todo agendamento novo entra "em analise": o pet shop precisa conferir os
+  // dados do dono/pet antes de confirmar (vira "agendado") ou recusar.
   const id = uuid();
   await db.run(
     `INSERT INTO appointments
       (id, user_id, pet_id, service_id, address_id, date, time, checkin_mode, checkout_mode,
-       service_price_cents, pickup_fee_cents, total_cents)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       status, service_price_cents, pickup_fee_cents, total_cents)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'em_analise', ?, ?, ?)`,
     [id, req.userId, pet_id, service_id, address_id || null, date, time, checkin_mode, checkout_mode,
      service.price_cents, pickupFee, total]
   );

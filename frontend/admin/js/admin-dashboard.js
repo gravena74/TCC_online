@@ -1,13 +1,8 @@
 import { requireAdminAuth } from "./admin-auth.js";
 import { renderAdminLayout } from "./admin-layout.js";
 import { adminApi } from "./admin-api.js";
+import { openAppointmentDetail, APPOINTMENT_STATUS_LABEL } from "./admin-appointment-detail.js";
 import { formatCents, formatDateLong } from "../../js/format.js";
-
-const STATUS_LABEL = {
-  agendado: "Agendado",
-  concluido: "Concluído",
-  cancelado: "Cancelado",
-};
 
 const admin = await requireAdminAuth();
 if (admin) {
@@ -35,8 +30,8 @@ function renderStats(analytics) {
     </div>
     <div class="admin-stat-card admin-stat-card--d">
       <span class="admin-stat-card__icon material-symbols-rounded" aria-hidden="true">hourglass_top</span>
-      <span class="admin-stat-card__value">${totals.pendingClients}</span>
-      <span class="admin-stat-card__label">Clientes em análise</span>
+      <span class="admin-stat-card__value">${totals.pendingAppointments}</span>
+      <span class="admin-stat-card__label">Agendamentos em análise</span>
     </div>
   `;
 }
@@ -54,7 +49,7 @@ function renderToday(date, appointments) {
   document.getElementById("todayTableBody").innerHTML = appointments
     .map(
       (a) => `
-      <tr>
+      <tr data-id="${a.id}">
         <td><strong>${a.time}</strong></td>
         <td>
           <div class="admin-table__cell-main">
@@ -65,35 +60,49 @@ function renderToday(date, appointments) {
         <td>${a.pet_name}</td>
         <td>${a.service_name}</td>
         <td>${formatCents(a.total_cents)}</td>
-        <td><span class="admin-badge admin-badge--${a.status}">${STATUS_LABEL[a.status] || a.status}</span></td>
+        <td><span class="admin-badge admin-badge--${a.status}">${APPOINTMENT_STATUS_LABEL[a.status] || a.status}</span></td>
       </tr>
     `
     )
     .join("");
+
+  document.getElementById("todayTableBody").querySelectorAll("tr[data-id]").forEach((row) => {
+    row.addEventListener("click", () => {
+      const appointment = appointments.find((a) => String(a.id) === row.dataset.id);
+      if (appointment) openAppointmentDetail(appointment);
+    });
+  });
 }
 
-function renderPending(clients) {
+function renderPending(appointments) {
   document.getElementById("pendingLoading").style.display = "none";
 
-  if (clients.length === 0) {
+  if (appointments.length === 0) {
     document.getElementById("pendingEmpty").style.display = "block";
     return;
   }
 
   document.getElementById("pendingTableWrap").style.display = "block";
-  document.getElementById("pendingTableBody").innerHTML = clients
+  document.getElementById("pendingTableBody").innerHTML = appointments
     .slice(0, 6)
     .map(
-      (c) => `
-      <tr data-id="${c.id}">
-        <td><strong>${c.name || "—"}</strong></td>
-        <td>${c.phone}</td>
-        <td>${new Date(c.created_at).toLocaleDateString("pt-BR")}</td>
+      (a) => `
+      <tr data-id="${a.id}">
         <td>
-          <button type="button" class="admin-icon-btn admin-icon-btn--approve" data-action="aprovado" title="Aprovar">
+          <div class="admin-table__cell-main">
+            <strong>${a.client_name || "—"}</strong>
+            <span>${a.client_phone || ""}</span>
+          </div>
+        </td>
+        <td>${a.pet_name}</td>
+        <td>${a.service_name}</td>
+        <td>${formatDateLong(a.date)} às ${a.time}</td>
+        <td>${formatCents(a.total_cents)}</td>
+        <td>
+          <button type="button" class="admin-icon-btn admin-icon-btn--approve" data-action="agendado" title="Aceitar">
             <span class="material-symbols-rounded" aria-hidden="true">check</span>
           </button>
-          <button type="button" class="admin-icon-btn admin-icon-btn--reject" data-action="reprovado" title="Reprovar">
+          <button type="button" class="admin-icon-btn admin-icon-btn--reject" data-action="recusado" title="Recusar">
             <span class="material-symbols-rounded" aria-hidden="true">close</span>
           </button>
         </td>
@@ -102,17 +111,27 @@ function renderPending(clients) {
     )
     .join("");
 
-  document.getElementById("pendingTableBody").querySelectorAll("button[data-action]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
+  const tableBody = document.getElementById("pendingTableBody");
+
+  tableBody.querySelectorAll("button[data-action]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
       const row = btn.closest("tr");
       btn.disabled = true;
       try {
-        await adminApi.updateClientStatus(row.dataset.id, btn.dataset.action);
+        await adminApi.updateAppointmentStatus(row.dataset.id, btn.dataset.action);
         loadPending();
       } catch (err) {
         alert(err.message);
         btn.disabled = false;
       }
+    });
+  });
+
+  tableBody.querySelectorAll("tr[data-id]").forEach((row) => {
+    row.addEventListener("click", () => {
+      const appointment = appointments.find((a) => String(a.id) === row.dataset.id);
+      if (appointment) openAppointmentDetail(appointment, { onStatusChange: loadPending });
     });
   });
 }
@@ -121,7 +140,7 @@ function loadPending() {
   document.getElementById("pendingLoading").style.display = "block";
   document.getElementById("pendingTableWrap").style.display = "none";
   document.getElementById("pendingEmpty").style.display = "none";
-  adminApi.getPendingClients().then(({ clients }) => renderPending(clients));
+  adminApi.getPendingAppointments().then(({ appointments }) => renderPending(appointments));
 }
 
 function init() {

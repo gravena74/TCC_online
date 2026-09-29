@@ -1,12 +1,8 @@
 import { requireAdminAuth } from "./admin-auth.js";
 import { renderAdminLayout } from "./admin-layout.js";
 import { adminApi } from "./admin-api.js";
-
-const STATUS_LABEL = {
-  pendente: "Em análise",
-  aprovado: "Aprovado",
-  reprovado: "Reprovado",
-};
+import { openAppointmentDetail, APPOINTMENT_STATUS_LABEL } from "./admin-appointment-detail.js";
+import { formatCents, formatDateLong } from "../../js/format.js";
 
 const admin = await requireAdminAuth();
 if (admin) {
@@ -15,8 +11,8 @@ if (admin) {
 }
 
 function init() {
-  let allClients = [];
-  let currentFilter = "pendente";
+  let allAppointments = [];
+  let currentFilter = "em_analise";
 
   const loadingEl = document.getElementById("clientsLoading");
   const tableWrapEl = document.getElementById("clientsTableWrap");
@@ -31,14 +27,15 @@ function init() {
       render();
     });
   });
-  document.querySelector('.filter-btn[data-filter="pendente"]').classList.add("filter-btn--active");
+  document.querySelector('.filter-btn[data-filter="em_analise"]').classList.add("filter-btn--active");
 
   function render() {
-    const clients = currentFilter === "todos" ? allClients : allClients.filter((c) => c.status === currentFilter);
+    const appointments =
+      currentFilter === "todos" ? allAppointments : allAppointments.filter((a) => a.status === currentFilter);
 
     loadingEl.style.display = "none";
 
-    if (clients.length === 0) {
+    if (appointments.length === 0) {
       tableWrapEl.style.display = "none";
       emptyEl.style.display = "block";
       return;
@@ -46,26 +43,23 @@ function init() {
 
     emptyEl.style.display = "none";
     tableWrapEl.style.display = "block";
-    tableBodyEl.innerHTML = clients
+    tableBodyEl.innerHTML = appointments
       .map(
-        (c) => `
-        <tr data-id="${c.id}">
-          <td><strong>${c.name || "—"}</strong></td>
-          <td>${c.phone}</td>
-          <td>${c.appointments_count}</td>
-          <td>${new Date(c.created_at).toLocaleDateString("pt-BR")}</td>
-          <td><span class="admin-badge admin-badge--${c.status}">${STATUS_LABEL[c.status] || c.status}</span></td>
+        (a) => `
+        <tr data-id="${a.id}">
+          <td><strong>${a.client_name || "—"}</strong></td>
+          <td>${a.pet_name}</td>
+          <td>${a.service_name}</td>
+          <td>${formatDateLong(a.date)} às ${a.time}</td>
+          <td>${formatCents(a.total_cents)}</td>
+          <td><span class="admin-badge admin-badge--${a.status}">${APPOINTMENT_STATUS_LABEL[a.status] || a.status}</span></td>
           <td>
             ${
-              c.status !== "aprovado"
-                ? `<button type="button" class="admin-icon-btn admin-icon-btn--approve" data-action="aprovado" title="Aprovar">
+              a.status === "em_analise"
+                ? `<button type="button" class="admin-icon-btn admin-icon-btn--approve" data-action="agendado" title="Aceitar">
                     <span class="material-symbols-rounded" aria-hidden="true">check</span>
-                  </button>`
-                : ""
-            }
-            ${
-              c.status !== "reprovado"
-                ? `<button type="button" class="admin-icon-btn admin-icon-btn--reject" data-action="reprovado" title="Reprovar">
+                  </button>
+                  <button type="button" class="admin-icon-btn admin-icon-btn--reject" data-action="recusado" title="Recusar">
                     <span class="material-symbols-rounded" aria-hidden="true">close</span>
                   </button>`
                 : ""
@@ -77,11 +71,12 @@ function init() {
       .join("");
 
     tableBodyEl.querySelectorAll("button[data-action]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
         const row = btn.closest("tr");
         btn.disabled = true;
         try {
-          await adminApi.updateClientStatus(row.dataset.id, btn.dataset.action);
+          await adminApi.updateAppointmentStatus(row.dataset.id, btn.dataset.action);
           await load();
         } catch (err) {
           alert(err.message);
@@ -89,11 +84,18 @@ function init() {
         }
       });
     });
+
+    tableBodyEl.querySelectorAll("tr[data-id]").forEach((row) => {
+      row.addEventListener("click", () => {
+        const appointment = appointments.find((a) => String(a.id) === row.dataset.id);
+        if (appointment) openAppointmentDetail(appointment, { onStatusChange: load });
+      });
+    });
   }
 
   async function load() {
-    const { clients } = await adminApi.getClients();
-    allClients = clients;
+    const { appointments } = await adminApi.getReviewAppointments();
+    allAppointments = appointments;
     render();
   }
 

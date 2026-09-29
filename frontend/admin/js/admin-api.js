@@ -52,11 +52,10 @@ export const adminApi = {
   getTodayAppointments: () => request("/appointments/today"),
   getAppointmentsByDate: (date) => request(`/appointments?date=${date}`),
   getCalendarMonth: (month) => request(`/appointments/calendar?month=${month}`),
-
-  getClients: () => request("/clients"),
-  getPendingClients: () => request("/clients/pending"),
-  updateClientStatus: (id, status) =>
-    request(`/clients/${id}/status`, { method: "PATCH", body: { status } }),
+  getPendingAppointments: () => request("/appointments/pending"),
+  getReviewAppointments: () => request("/appointments/review"),
+  updateAppointmentStatus: (id, status) =>
+    request(`/appointments/${id}/status`, { method: "PATCH", body: { status } }),
 
   getAnalytics: () => request("/analytics"),
 };

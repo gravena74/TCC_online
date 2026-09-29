@@ -375,12 +375,11 @@
   font-weight: 700;
 }
 
-.admin-badge--pendente { background: #FEF3C7; color: #92400E; }
-.admin-badge--aprovado { background: #DCFCE7; color: #166534; }
-.admin-badge--reprovado { background: #FEE2E2; color: #991B1B; }
+.admin-badge--em_analise { background: #FEF3C7; color: #92400E; }
 .admin-badge--agendado { background: var(--brand-100); color: var(--brand-700); }
 .admin-badge--concluido { background: #DCFCE7; color: #166534; }
 .admin-badge--cancelado { background: #FEE2E2; color: #991B1B; }
+.admin-badge--recusado { background: #FEE2E2; color: #991B1B; }
 
 /* ===== Botoes de acao pequenos ===== */
 .admin-icon-btn {
@@ -401,6 +400,21 @@
 
 .admin-icon-btn--approve { background: #DCFCE7; color: #166534; }
 .admin-icon-btn--reject { background: #FEE2E2; color: #991B1B; }
+
+/* ===== Modal de detalhes do cliente/pet (tela de analise) ===== */
+.admin-client-dialog {
+  max-width: 30rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.admin-table tbody tr[data-id] {
+  cursor: pointer;
+}
+
+.admin-table tbody tr[data-id]:hover {
+  background: var(--brand-50, #F0FAF3);
+}
 
 /* ===== Graficos (pagina Analise) ===== */
 .admin-chart-card {

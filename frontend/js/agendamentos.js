@@ -3,10 +3,14 @@ import { requireAuth } from "./guard.js";
 import { formatCents, formatDateLong } from "./format.js";
 
 const STATUS_LABEL = {
+  em_analise: { text: "Em análise", className: "status-badge--em_analise" },
   agendado: { text: "Agendado", className: "status-badge--agendado" },
   concluido: { text: "Concluído", className: "status-badge--concluido" },
   cancelado: { text: "Cancelado", className: "status-badge--cancelado" },
+  recusado: { text: "Recusado", className: "status-badge--recusado" },
 };
+
+const CANCELABLE_STATUSES = ["agendado", "em_analise"];
 
 const user = await requireAuth();
 if (user) {
@@ -60,11 +64,11 @@ function init() {
         </div>
         <div class="appointment-card__bottom">
           <span class="appointment-card__price">${formatCents(a.total_cents)}</span>
-          ${a.status === "agendado" ? `<button type="button" class="btn-link" style="font-size: 0.75rem;">Cancelar</button>` : ""}
+          ${CANCELABLE_STATUSES.includes(a.status) ? `<button type="button" class="btn-link" style="font-size: 0.75rem;">Cancelar</button>` : ""}
         </div>
       `;
 
-      if (a.status === "agendado") {
+      if (CANCELABLE_STATUSES.includes(a.status)) {
         card.querySelector(".btn-link").addEventListener("click", async () => {
           await api.cancelAppointment(a.id);
           load();

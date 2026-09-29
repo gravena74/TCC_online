@@ -58,8 +58,8 @@ function renderStats(totals) {
     </div>
     <div class="admin-stat-card admin-stat-card--d">
       <span class="admin-stat-card__icon material-symbols-rounded" aria-hidden="true">hourglass_top</span>
-      <span class="admin-stat-card__value">${totals.pendingClients}</span>
-      <span class="admin-stat-card__label">Clientes em análise</span>
+      <span class="admin-stat-card__value">${totals.pendingAppointments}</span>
+      <span class="admin-stat-card__label">Agendamentos em análise</span>
     </div>
   `;
 }

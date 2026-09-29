@@ -1,6 +1,7 @@
 import { requireAdminAuth } from "./admin-auth.js";
 import { renderAdminLayout } from "./admin-layout.js";
 import { adminApi } from "./admin-api.js";
+import { openAppointmentDetail, APPOINTMENT_STATUS_LABEL } from "./admin-appointment-detail.js";
 import { formatCents } from "../../js/format.js";
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -119,10 +120,10 @@ function init() {
       dayListEl.innerHTML = appointments
         .map(
           (a) => `
-          <div class="admin-day-appointment">
+          <div class="admin-day-appointment" data-id="${a.id}" style="cursor: pointer;">
             <div class="admin-day-appointment__top">
               <span class="admin-day-appointment__time">${a.time}</span>
-              <span class="admin-badge admin-badge--${a.status}">${a.status}</span>
+              <span class="admin-badge admin-badge--${a.status}">${APPOINTMENT_STATUS_LABEL[a.status] || a.status}</span>
             </div>
             <strong>${a.client_name || "—"}</strong>
             <span class="admin-day-appointment__meta">${a.pet_name} · ${a.service_name} · ${formatCents(a.total_cents)}</span>
@@ -130,6 +131,13 @@ function init() {
         `
         )
         .join("");
+
+      dayListEl.querySelectorAll("[data-id]").forEach((el) => {
+        el.addEventListener("click", () => {
+          const appointment = appointments.find((a) => String(a.id) === el.dataset.id);
+          if (appointment) openAppointmentDetail(appointment, { onStatusChange: loadDay });
+        });
+      });
     });
   }
 

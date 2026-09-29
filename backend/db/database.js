@@ -119,7 +119,7 @@ const SCHEMA_STATEMENTS = [
     time                  VARCHAR(5) NOT NULL,
     checkin_mode          VARCHAR(30) NOT NULL,
     checkout_mode         VARCHAR(30) NOT NULL,
-    status                VARCHAR(20) NOT NULL DEFAULT 'agendado',
+    status                VARCHAR(20) NOT NULL DEFAULT 'em_analise',
     service_price_cents   INT NOT NULL,
     pickup_fee_cents      INT NOT NULL DEFAULT 0,
     total_cents           INT NOT NULL,

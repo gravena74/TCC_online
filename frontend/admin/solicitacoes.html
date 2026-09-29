@@ -24,11 +24,11 @@
       <main class="admin-content">
         <section class="admin-panel">
           <div class="admin-panel__head">
-            <h2>Solicitações de clientes</h2>
+            <h2>Solicitações de agendamento</h2>
             <div style="display: flex; gap: 0.5rem;">
-              <button type="button" class="filter-btn" data-filter="pendente">Em análise</button>
-              <button type="button" class="filter-btn" data-filter="aprovado">Aprovados</button>
-              <button type="button" class="filter-btn" data-filter="reprovado">Reprovados</button>
+              <button type="button" class="filter-btn" data-filter="em_analise">Em análise</button>
+              <button type="button" class="filter-btn" data-filter="agendado">Aceitos</button>
+              <button type="button" class="filter-btn" data-filter="recusado">Recusados</button>
               <button type="button" class="filter-btn" data-filter="todos">Todos</button>
             </div>
           </div>
@@ -38,9 +38,10 @@
               <thead>
                 <tr>
                   <th>Cliente</th>
-                  <th>Telefone</th>
-                  <th>Agendamentos</th>
-                  <th>Cadastrado em</th>
+                  <th>Pet</th>
+                  <th>Serviço</th>
+                  <th>Data/Horário</th>
+                  <th>Valor</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -48,7 +49,7 @@
               <tbody id="clientsTableBody"></tbody>
             </table>
           </div>
-          <div class="admin-empty" id="clientsEmpty" style="display: none;">Nenhum cliente encontrado.</div>
+          <div class="admin-empty" id="clientsEmpty" style="display: none;">Nenhuma solicitação encontrada.</div>
         </section>
       </main>
     </div>
