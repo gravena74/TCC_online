@@ -51,6 +51,12 @@ function init() {
       formData.append("breed", document.getElementById("breed").value);
       formData.append("age_years", document.getElementById("age").value);
       formData.append("size", document.getElementById("size").value);
+      formData.append("has_fleas_ticks", document.getElementById("hasFleasTicks").value);
+      formData.append("has_allergy", document.getElementById("hasAllergy").value);
+      formData.append("allows_perfume", document.getElementById("allowsPerfume").value);
+      formData.append("been_to_petshop", document.getElementById("beenToPetshop").value);
+      formData.append("is_aggressive", document.getElementById("isAggressive").value);
+      formData.append("has_fur_knots", document.getElementById("hasFurKnots").value);
       if (photoFile) formData.append("photo", photoFile);
 
       await api.createPet(formData);

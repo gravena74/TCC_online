@@ -114,6 +114,10 @@ function init() {
     }
   }
 
+  function setBoolFieldValue(id, value) {
+    document.getElementById(id).value = value === null || value === undefined ? "" : String(value);
+  }
+
   editPetBtn.addEventListener("click", () => {
     petFormError.style.display = "none";
     photoFile = null;
@@ -121,6 +125,12 @@ function init() {
     document.getElementById("age").value = pet.age_years || "";
     document.getElementById("breed").value = pet.breed || "";
     document.getElementById("size").value = pet.size || "";
+    setBoolFieldValue("hasFleasTicks", pet.has_fleas_ticks);
+    setBoolFieldValue("hasAllergy", pet.has_allergy);
+    setBoolFieldValue("allowsPerfume", pet.allows_perfume);
+    setBoolFieldValue("beenToPetshop", pet.been_to_petshop);
+    setBoolFieldValue("isAggressive", pet.is_aggressive);
+    setBoolFieldValue("hasFurKnots", pet.has_fur_knots);
     resetPhotoPreview();
     petDialog.showModal();
   });
@@ -164,6 +174,12 @@ function init() {
       formData.append("breed", document.getElementById("breed").value);
       formData.append("age_years", document.getElementById("age").value);
       formData.append("size", document.getElementById("size").value);
+      formData.append("has_fleas_ticks", document.getElementById("hasFleasTicks").value);
+      formData.append("has_allergy", document.getElementById("hasAllergy").value);
+      formData.append("allows_perfume", document.getElementById("allowsPerfume").value);
+      formData.append("been_to_petshop", document.getElementById("beenToPetshop").value);
+      formData.append("is_aggressive", document.getElementById("isAggressive").value);
+      formData.append("has_fur_knots", document.getElementById("hasFurKnots").value);
       if (photoFile) formData.append("photo", photoFile);
 
       const { pet: updated } = await api.updatePet(petId, formData);

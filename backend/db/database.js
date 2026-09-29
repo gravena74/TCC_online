@@ -58,14 +58,20 @@ const SCHEMA_STATEMENTS = [
   ) ENGINE=InnoDB`,
 
   `CREATE TABLE IF NOT EXISTS pets (
-    id            VARCHAR(36) PRIMARY KEY,
-    user_id       VARCHAR(36) NOT NULL,
-    name          VARCHAR(255) NOT NULL,
-    breed         VARCHAR(255),
-    age_years     INT,
-    size          VARCHAR(20),
-    photo_url     VARCHAR(500),
-    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id                VARCHAR(36) PRIMARY KEY,
+    user_id           VARCHAR(36) NOT NULL,
+    name              VARCHAR(255) NOT NULL,
+    breed             VARCHAR(255),
+    age_years         INT,
+    size              VARCHAR(20),
+    photo_url         VARCHAR(500),
+    has_fleas_ticks   TINYINT(1),
+    has_allergy       TINYINT(1),
+    allows_perfume    TINYINT(1),
+    been_to_petshop   TINYINT(1),
+    is_aggressive     TINYINT(1),
+    has_fur_knots     TINYINT(1),
+    created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB`,
 
@@ -154,6 +160,23 @@ export async function initDatabase() {
     await pool.query(`ALTER TABLE users ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pendente'`);
   } catch (err) {
     if (err.code !== "ER_DUP_FIELDNAME") throw err;
+  }
+
+  // Migracao leve: adiciona as novas perguntas de cadastro em bases ja existentes.
+  const newPetColumns = [
+    "has_fleas_ticks TINYINT(1)",
+    "has_allergy TINYINT(1)",
+    "allows_perfume TINYINT(1)",
+    "been_to_petshop TINYINT(1)",
+    "is_aggressive TINYINT(1)",
+    "has_fur_knots TINYINT(1)",
+  ];
+  for (const column of newPetColumns) {
+    try {
+      await pool.query(`ALTER TABLE pets ADD COLUMN ${column}`);
+    } catch (err) {
+      if (err.code !== "ER_DUP_FIELDNAME") throw err;
+    }
   }
 }
 
