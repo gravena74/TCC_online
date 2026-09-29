@@ -8,6 +8,21 @@ import { maskCep } from "./masks.js";
 const VIACEP_URL = "https://viacep.com.br/ws";
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org";
 
+// R. Gramados, 46 - Jardim Conceição, Hortolândia - SP, 13185-780
+const STORE_LAT = -22.8660981;
+const STORE_LON = -47.1586768;
+const MAX_DISTANCE_KM = 6;
+
+function distanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
 const user = await requireAuth();
 if (user) {
   const booking = getBooking();
@@ -35,8 +50,20 @@ function init(booking) {
 
   const mapCard = document.getElementById("mapCard");
   const mapCaption = document.getElementById("mapCaption");
+  const distanceStatus = document.getElementById("distanceStatus");
   let map = null;
   let mapMarker = null;
+  let addressOutOfRange = false;
+
+  function updateDistanceStatus(lat, lon) {
+    const km = distanceKm(lat, lon, STORE_LAT, STORE_LON);
+    addressOutOfRange = km > MAX_DISTANCE_KM;
+    distanceStatus.style.display = "block";
+    distanceStatus.classList.toggle("form-hint--error", addressOutOfRange);
+    distanceStatus.textContent = addressOutOfRange
+      ? `Endereço a ${km.toFixed(1)} km da loja — fora da nossa área de atendimento (até ${MAX_DISTANCE_KM} km). Escolha levar/retirar no pet shop.`
+      : `Endereço a ${km.toFixed(1)} km da loja — dentro da área de atendimento.`;
+  }
 
   function showMap(lat, lon, caption) {
     mapCard.style.display = "block";
@@ -52,6 +79,7 @@ function init(booking) {
       mapMarker.setLatLng([lat, lon]);
     }
     mapCaption.textContent = caption || "";
+    updateDistanceStatus(lat, lon);
     // O mapa é criado enquanto o card pode estar com largura 0 (recém-exibido);
     // sem isso o Leaflet mede o container errado e renderiza cortado.
     requestAnimationFrame(() => map.invalidateSize());
@@ -67,6 +95,9 @@ function init(booking) {
     const street = streetInput.value.trim();
     const city = cityInput.value.trim();
     if (!street || !city) return;
+
+    addressOutOfRange = false;
+    distanceStatus.style.display = "none";
 
     const query = [street, numberInput.value.trim(), neighborhoodInput.value.trim(), city, stateInput.value.trim(), "Brasil"]
       .filter(Boolean)
@@ -97,6 +128,8 @@ function init(booking) {
 
   function unlockAddress() {
     cepData = null;
+    addressOutOfRange = false;
+    distanceStatus.style.display = "none";
     [stateInput, streetInput, neighborhoodInput, cityInput].forEach((i) => setLocked(i, false));
   }
 
@@ -307,6 +340,9 @@ function init(booking) {
       if (address.neighborhood && !textOk(address.neighborhood)) return fail("Informe um bairro válido.");
       if (!/^(\d{1,6}[A-Za-z]?|s\/?n)$/i.test(address.number.trim())) {
         return fail('Informe o número da residência (ex: 120, 120A ou "s/n").');
+      }
+      if (addressOutOfRange) {
+        return fail(`Não atendemos esse endereço: a distância até a loja é maior que ${MAX_DISTANCE_KM} km. Escolha levar/retirar no pet shop.`);
       }
       // Cidade/UF vêm sempre do CEP validado, nunca do que estiver digitado.
       address.city = cepData.city;
