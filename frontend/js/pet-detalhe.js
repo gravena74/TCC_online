@@ -1,5 +1,6 @@
 import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
+import { populateBreedSelect } from "./breeds.js";
 
 const petId = new URLSearchParams(window.location.search).get("id");
 
@@ -23,6 +24,8 @@ if (user) {
 }
 
 function init() {
+  populateBreedSelect(document.getElementById("breed"));
+
   const loadingMsg = document.getElementById("loadingMsg");
   const loadErrorMsg = document.getElementById("loadErrorMsg");
   const content = document.getElementById("content");

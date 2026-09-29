@@ -1,5 +1,6 @@
 import { api } from "./api.js";
 import { requireAuth } from "./guard.js";
+import { populateBreedSelect } from "./breeds.js";
 
 const isManageMode = new URLSearchParams(window.location.search).get("from") === "manage";
 const backTarget = isManageMode ? "pets.html?mode=manage" : "pets.html";
@@ -13,6 +14,8 @@ if (user) {
 }
 
 function init() {
+  populateBreedSelect(document.getElementById("breed"));
+
   const form = document.getElementById("petForm");
   const photoBtn = document.getElementById("photoUploadBtn");
   const photoInput = document.getElementById("photoInput");
