@@ -1,6 +1,7 @@
 import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { formatCents, formatDateLong } from "./format.js";
+import { escapeHtml } from "./html.js";
 
 const STATUS_LABEL = {
   em_analise: { text: "Em análise", className: "status-badge--em_analise" },
@@ -46,7 +47,7 @@ function init() {
     for (const a of appointments) {
       const status = STATUS_LABEL[a.status] || STATUS_LABEL.agendado;
       const photo = a.pet_photo
-        ? `<img src="${resolveAssetUrl(a.pet_photo)}" alt="${a.pet_name}">`
+        ? `<img src="${escapeHtml(resolveAssetUrl(a.pet_photo))}" alt="${escapeHtml(a.pet_name)}">`
         : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
 
       const card = document.createElement("div");
@@ -56,8 +57,8 @@ function init() {
           <div class="appointment-card__pet">
             <div class="appointment-card__photo">${photo}</div>
             <div>
-              <p class="appointment-card__name">${a.pet_name}</p>
-              <p class="appointment-card__meta">${a.service_name} · ${formatDateLong(a.date)} às ${a.time}</p>
+              <p class="appointment-card__name">${escapeHtml(a.pet_name)}</p>
+              <p class="appointment-card__meta">${escapeHtml(a.service_name)} · ${formatDateLong(a.date)} às ${escapeHtml(a.time)}</p>
             </div>
           </div>
           <span class="status-badge ${status.className}">${status.text}</span>

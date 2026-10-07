@@ -1,3 +1,4 @@
+import { escapeHtml } from "../../js/html.js";
 import { resolveAssetUrl } from "../../js/api.js";
 import { formatCents } from "../../js/format.js";
 import { adminApi } from "./admin-api.js";
@@ -61,7 +62,7 @@ export function openAppointmentDetail(appointment, { onStatusChange } = {}) {
   const actions = dlg.querySelector("#adminAppointmentDetailActions");
 
   const photo = appointment.pet_photo_url
-    ? `<img src="${resolveAssetUrl(appointment.pet_photo_url)}" alt="${appointment.pet_name}" style="width: 4rem; height: 4rem; border-radius: 0.75rem; object-fit: cover;">`
+    ? `<img src="${escapeHtml(resolveAssetUrl(appointment.pet_photo_url))}" alt="${escapeHtml(appointment.pet_name)}" style="width: 4rem; height: 4rem; border-radius: 0.75rem; object-fit: cover;">`
     : `<div style="width: 4rem; height: 4rem; border-radius: 0.75rem; background: var(--brand-100); display: flex; align-items: center; justify-content: center;">
         <span class="material-symbols-rounded" aria-hidden="true">pets</span>
       </div>`;
@@ -77,8 +78,8 @@ export function openAppointmentDetail(appointment, { onStatusChange } = {}) {
       <div class="card" style="margin-top: 0.75rem; padding: 1rem;">
         <p style="font-weight: 700;">Local de busca/entrega</p>
         <p style="font-size: 0.875rem; color: var(--muted); margin-top: 0.25rem;">
-          ${appointment.address_street}, ${appointment.address_number} — ${appointment.address_neighborhood}<br>
-          ${appointment.address_city}/${appointment.address_state} · CEP ${appointment.address_cep}
+          ${escapeHtml(appointment.address_street)}, ${escapeHtml(appointment.address_number)} — ${escapeHtml(appointment.address_neighborhood)}<br>
+          ${escapeHtml(appointment.address_city)}/${escapeHtml(appointment.address_state)} · CEP ${escapeHtml(appointment.address_cep)}
         </p>
       </div>
     `
@@ -91,7 +92,7 @@ export function openAppointmentDetail(appointment, { onStatusChange } = {}) {
       ? `
         <div style="display: flex; justify-content: space-between; padding: 0.375rem 0; border-top: 1px solid var(--brand-100);">
           <span style="color: var(--muted);">Taxa de busca/entrega</span>
-          <strong>${formatCents(appointment.pickup_fee_cents)}</strong>
+          <strong>${escapeHtml(formatCents(appointment.pickup_fee_cents))}</strong>
         </div>
       `
       : "";
@@ -110,13 +111,13 @@ export function openAppointmentDetail(appointment, { onStatusChange } = {}) {
       <div style="display: flex; align-items: center; gap: 0.75rem;">
         ${photo}
         <div>
-          <p style="font-weight: 700;">${appointment.pet_name}</p>
-          <p style="font-size: 0.8125rem; color: var(--muted);">${petBasics.join(" · ")}</p>
+          <p style="font-weight: 700;">${escapeHtml(appointment.pet_name)}</p>
+          <p style="font-size: 0.8125rem; color: var(--muted);">${escapeHtml(petBasics.join(" · "))}</p>
         </div>
       </div>
       <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--brand-100);">
-        <p style="font-weight: 700;">${appointment.client_name || "—"}</p>
-        <p style="font-size: 0.8125rem; color: var(--muted);">${appointment.client_phone || ""}</p>
+        <p style="font-weight: 700;">${escapeHtml(appointment.client_name || "—")}</p>
+        <p style="font-size: 0.8125rem; color: var(--muted);">${escapeHtml(appointment.client_phone || "")}</p>
       </div>
     </div>
 
@@ -127,14 +128,14 @@ export function openAppointmentDetail(appointment, { onStatusChange } = {}) {
 
     <div class="card" style="margin-top: 0.75rem; padding: 1rem;">
       <div style="display: flex; align-items: center; justify-content: space-between;">
-        <p style="font-weight: 700;">${appointment.service_name}</p>
-        <span class="admin-badge admin-badge--${appointment.status}">${APPOINTMENT_STATUS_LABEL[appointment.status] || appointment.status}</span>
+        <p style="font-weight: 700;">${escapeHtml(appointment.service_name)}</p>
+        <span class="admin-badge admin-badge--${escapeHtml(appointment.status)}">${escapeHtml(APPOINTMENT_STATUS_LABEL[appointment.status] || appointment.status)}</span>
       </div>
       <p style="font-size: 0.8125rem; color: var(--muted); margin-top: 0.25rem;">
-        ${new Date(`${appointment.date}T00:00:00`).toLocaleDateString("pt-BR")} às ${appointment.time}
+        ${new Date(`${appointment.date}T00:00:00`).toLocaleDateString("pt-BR")} às ${escapeHtml(appointment.time)}
       </p>
-      <p style="font-size: 0.8125rem; margin-top: 0.5rem;">${CHECKIN_LABEL[appointment.checkin_mode] || appointment.checkin_mode}</p>
-      <p style="font-size: 0.8125rem;">${CHECKOUT_LABEL[appointment.checkout_mode] || appointment.checkout_mode}</p>
+      <p style="font-size: 0.8125rem; margin-top: 0.5rem;">${escapeHtml(CHECKIN_LABEL[appointment.checkin_mode] || appointment.checkin_mode)}</p>
+      <p style="font-size: 0.8125rem;">${escapeHtml(CHECKOUT_LABEL[appointment.checkout_mode] || appointment.checkout_mode)}</p>
     </div>
 
     ${addressHtml}
@@ -143,12 +144,12 @@ export function openAppointmentDetail(appointment, { onStatusChange } = {}) {
       <p style="font-weight: 700; margin-bottom: 0.25rem;">Valor estimado</p>
       <div style="display: flex; justify-content: space-between; padding: 0.375rem 0;">
         <span style="color: var(--muted);">Serviço</span>
-        <strong>${formatCents(appointment.service_price_cents)}</strong>
+        <strong>${escapeHtml(formatCents(appointment.service_price_cents))}</strong>
       </div>
       ${pickupFeeRow}
       <div style="display: flex; justify-content: space-between; padding: 0.5rem 0 0; border-top: 1px solid var(--brand-100); margin-top: 0.25rem;">
         <span style="font-weight: 700;">Total</span>
-        <strong>${formatCents(appointment.total_cents)}</strong>
+        <strong>${escapeHtml(formatCents(appointment.total_cents))}</strong>
       </div>
     </div>
   `;

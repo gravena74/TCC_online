@@ -3,12 +3,13 @@ import { v4 as uuid } from "uuid";
 import { db } from "../db/database.js";
 import { requireAuth } from "../middleware/auth.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
+import { isValidDate } from "../utils/time.js";
 
 const router = Router();
 router.use(requireAuth);
 
 async function findOwnedPet(petId, userId) {
-  return db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ?`, [petId, userId]);
+  return db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ? AND deleted_at IS NULL`, [petId, userId]);
 }
 
 // GET /api/pets/:petId/vaccines
@@ -32,6 +33,10 @@ router.post("/pets/:petId/vaccines", asyncHandler(async (req, res) => {
   if (!name || !applied_at) {
     return res.status(400).json({ error: "Informe o nome da vacina e a data de aplicacao." });
   }
+  if (!isValidDate(applied_at) || (next_dose_at &&
+      (!isValidDate(next_dose_at) || next_dose_at < applied_at))) {
+    return res.status(400).json({ error: "Informe datas validas; a proxima dose nao pode ser anterior a aplicacao." });
+  }
 
   const id = uuid();
   await db.run(
@@ -46,18 +51,23 @@ router.post("/pets/:petId/vaccines", asyncHandler(async (req, res) => {
 // PATCH /api/vaccines/:id  { name, applied_at, next_dose_at?, notes? }
 router.patch("/vaccines/:id", asyncHandler(async (req, res) => {
   const vaccine = await db.get(
-    `SELECT v.* FROM vaccines v JOIN pets p ON p.id = v.pet_id WHERE v.id = ? AND p.user_id = ?`,
+    `SELECT v.* FROM vaccines v JOIN pets p ON p.id = v.pet_id WHERE v.id = ? AND p.user_id = ? AND p.deleted_at IS NULL`,
     [req.params.id, req.userId]
   );
   if (!vaccine) return res.status(404).json({ error: "Vacina nao encontrada." });
 
   const { name, applied_at, next_dose_at, notes } = req.body;
+  const applied = applied_at === undefined ? vaccine.applied_at : applied_at;
+  const nextDose = next_dose_at === undefined ? vaccine.next_dose_at : next_dose_at || null;
+  if (!isValidDate(applied) || (nextDose && (!isValidDate(nextDose) || nextDose < applied))) {
+    return res.status(400).json({ error: "Informe datas validas; a proxima dose nao pode ser anterior a aplicacao." });
+  }
   await db.run(
     `UPDATE vaccines SET name = ?, applied_at = ?, next_dose_at = ?, notes = ? WHERE id = ?`,
     [
       name || vaccine.name,
-      applied_at || vaccine.applied_at,
-      next_dose_at !== undefined ? next_dose_at || null : vaccine.next_dose_at,
+      applied,
+      nextDose,
       notes !== undefined ? notes || null : vaccine.notes,
       vaccine.id,
     ]
@@ -70,7 +80,7 @@ router.patch("/vaccines/:id", asyncHandler(async (req, res) => {
 // DELETE /api/vaccines/:id
 router.delete("/vaccines/:id", asyncHandler(async (req, res) => {
   const result = await db.run(
-    `DELETE v FROM vaccines v JOIN pets p ON p.id = v.pet_id WHERE v.id = ? AND p.user_id = ?`,
+    `DELETE v FROM vaccines v JOIN pets p ON p.id = v.pet_id WHERE v.id = ? AND p.user_id = ? AND p.deleted_at IS NULL`,
     [req.params.id, req.userId]
   );
   if (result.changes === 0) return res.status(404).json({ error: "Vacina nao encontrada." });

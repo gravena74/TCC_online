@@ -2,6 +2,7 @@ import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { getBooking, updateBooking } from "./booking.js";
 import { formatCents, toIsoDate } from "./format.js";
+import { escapeHtml } from "./html.js";
 
 const SERVICE_ICONS = { Banho: "bathtub", Tosa: "content_cut" };
 
@@ -52,11 +53,13 @@ function init(booking) {
   let selectedDate = booking.date || null;
   let selectedTime = booking.time || null;
   let slots = [];
+  let loadingSlots = false;
+  let slotsRequest = 0;
 
   // Resumo do pet
   document.getElementById("petSummary").style.display = "flex";
   document.getElementById("petSummaryPhoto").innerHTML = booking.pet.photo_url
-    ? `<img src="${resolveAssetUrl(booking.pet.photo_url)}" alt="${booking.pet.name}">`
+    ? `<img src="${escapeHtml(resolveAssetUrl(booking.pet.photo_url))}" alt="${escapeHtml(booking.pet.name)}">`
     : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
   document.getElementById("petSummaryName").textContent = booking.pet.name;
   document.getElementById("petSummaryBreed").textContent = booking.pet.breed || "";
@@ -70,7 +73,7 @@ function init(booking) {
       chip.className = `service-chip${active ? " service-chip--active" : ""}`;
       const displayName = displayServiceName(service.name);
       const iconName = displayName.includes("Tosa") ? SERVICE_ICONS.Tosa : SERVICE_ICONS.Banho;
-      chip.innerHTML = `<span class="material-symbols-rounded" aria-hidden="true">${iconName}</span> ${displayName}`;
+      chip.innerHTML = `<span class="material-symbols-rounded" aria-hidden="true">${iconName}</span> ${escapeHtml(displayName)}`;
       chip.addEventListener("click", () => {
         selectedService = service;
         selectedTime = null;
@@ -136,12 +139,16 @@ function init(booking) {
 
   function loadSlots() {
     if (!selectedService || !selectedDate) return;
+    const request = ++slotsRequest;
+    loadingSlots = true;
+    updateSummary();
     slotsSection.style.display = "block";
     slotsLoading.style.display = "block";
     slotsGrid.innerHTML = "";
     api
       .getSlots(selectedService.id, selectedDate)
       .then(({ slots: res }) => {
+        if (request !== slotsRequest) return;
         slots = res;
         // um horario escolhido antes pode ter passado/sido reservado nesse meio tempo
         if (selectedTime && !slots.some((s) => s.time === selectedTime && s.available)) {
@@ -151,16 +158,21 @@ function init(booking) {
         renderSlots();
       })
       .catch((err) => {
+        if (request !== slotsRequest) return;
+        selectedTime = null;
         errorMsg.textContent = err.message;
         errorMsg.style.display = "block";
       })
       .finally(() => {
+        if (request !== slotsRequest) return;
+        loadingSlots = false;
         slotsLoading.style.display = "none";
+        updateSummary();
       });
   }
 
   function updateSummary() {
-    const canAdvance = Boolean(selectedService && selectedDate && selectedTime);
+    const canAdvance = Boolean(services.some((s) => s.id === selectedService?.id) && selectedDate && selectedTime && !loadingSlots);
     advanceBtn.disabled = !canAdvance;
     if (selectedService && selectedTime) {
       summaryLine.style.display = "block";
@@ -180,18 +192,38 @@ function init(booking) {
   });
 
   advanceBtn.addEventListener("click", () => {
-    if (!selectedService || !selectedDate || !selectedTime) return;
+    if (advanceBtn.disabled || !selectedService || !selectedDate || !selectedTime) return;
     updateBooking({ service: selectedService, date: selectedDate, time: selectedTime });
     window.location.href = "checkout.html";
   });
 
-  api.getServices().then(({ services: res }) => {
-    const petSize = booking.pet.size;
-    const bySize = petSize ? res.filter((s) => s.name.startsWith(`${petSize} -`)) : res;
-    services = bySize.length ? bySize : res;
+  Promise.all([api.getServices(), api.getPet(booking.pet.id)]).then(([{ services: res }, { pet }]) => {
+    const changed = pet.size !== booking.pet.size;
+    booking.pet = pet;
+    const petSize = pet.size;
+    const bySize = petSize ? res.filter((s) => s.name.startsWith(`${petSize} -`)) : [];
+    services = bySize;
+    if (!services.length) {
+      errorMsg.textContent = "Atualize o porte do pet na ficha antes de agendar.";
+      errorMsg.style.display = "block";
+    }
+    const currentService = services.find((s) => s.id === selectedService?.id);
+    if (changed || !currentService) {
+      selectedService = null;
+      selectedTime = null;
+    } else {
+      selectedService = currentService; // Preco atual, nao a copia antiga da sessao.
+    }
+    updateBooking({ pet });
     if (!selectedService && services.length) selectedService = services[0];
     renderServices();
     if (selectedDate) loadSlots();
+    updateSummary();
+  }).catch((err) => {
+    selectedService = null;
+    selectedTime = null;
+    errorMsg.textContent = err.message;
+    errorMsg.style.display = "block";
     updateSummary();
   });
 

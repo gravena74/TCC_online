@@ -1,3 +1,4 @@
+import { escapeHtml } from "../../js/html.js";
 import { adminLogout } from "./admin-api.js";
 
 const NAV_ITEMS = [
@@ -45,7 +46,7 @@ export function renderAdminLayout(activeKey, adminName) {
     <div class="spacer"></div>
     <div class="admin-topbar__profile">
       <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
-      <span>${adminName || "Administrador"}</span>
+      <span>${escapeHtml(adminName || "Administrador")}</span>
     </div>
   `;
 

@@ -1,6 +1,7 @@
 import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { populateBreedSelect } from "./breeds.js";
+import { escapeHtml } from "./html.js";
 
 const petId = new URLSearchParams(window.location.search).get("id");
 
@@ -99,7 +100,7 @@ function init() {
     petMetaEl.textContent = metaParts.join(" · ");
 
     petPhotoWrap.innerHTML = pet.photo_url
-      ? `<img src="${resolveAssetUrl(pet.photo_url)}" alt="${pet.name}">`
+      ? `<img src="${escapeHtml(resolveAssetUrl(pet.photo_url))}" alt="${escapeHtml(pet.name)}">`
       : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
   }
 
@@ -226,13 +227,13 @@ function init() {
       const nextDose = vaccine.next_dose_at
         ? `<p class="vaccine-card__next"><span class="material-symbols-rounded" aria-hidden="true">event_repeat</span> Próxima dose: ${formatDatePt(vaccine.next_dose_at)}</p>`
         : "";
-      const notes = vaccine.notes ? `<p class="vaccine-card__notes">${vaccine.notes}</p>` : "";
+      const notes = vaccine.notes ? `<p class="vaccine-card__notes">${escapeHtml(vaccine.notes)}</p>` : "";
 
       card.innerHTML = `
         <div class="vaccine-card__top">
           <div class="vaccine-card__icon"><span class="material-symbols-rounded" aria-hidden="true">vaccines</span></div>
           <div class="vaccine-card__info">
-            <p class="vaccine-card__name">${vaccine.name}</p>
+            <p class="vaccine-card__name">${escapeHtml(vaccine.name)}</p>
             <p class="vaccine-card__applied">Aplicada em ${formatDatePt(vaccine.applied_at)}</p>
             ${nextDose}
             ${notes}

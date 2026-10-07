@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "troque-este-segredo-em-producao";
+import { JWT_SECRET } from "../utils/jwtConfig.js";
+import { db } from "../db/database.js";
+import { asyncHandler } from "./asyncHandler.js";
 
 export function signAdminToken(admin) {
   return jwt.sign({ sub: admin.id, role: "admin" }, JWT_SECRET, { expiresIn: "12h" });
 }
 
-export function requireAdminAuth(req, res, next) {
+export const requireAdminAuth = asyncHandler(async (req, res, next) => {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : null;
 
@@ -14,14 +15,19 @@ export function requireAdminAuth(req, res, next) {
     return res.status(401).json({ error: "Nao autenticado. Faca login novamente." });
   }
 
+  let payload;
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] });
     if (payload.role !== "admin") {
       return res.status(403).json({ error: "Acesso restrito ao administrador." });
     }
-    req.adminId = payload.sub;
-    next();
   } catch (err) {
     return res.status(401).json({ error: "Sessao expirada. Faca login novamente." });
   }
-}
+  if (typeof payload.sub !== "string" || !payload.sub ||
+      !await db.get(`SELECT id FROM admins WHERE id = ?`, [payload.sub])) {
+    return res.status(401).json({ error: "Administrador nao encontrado. Faca login novamente." });
+  }
+  req.adminId = payload.sub;
+  next();
+});

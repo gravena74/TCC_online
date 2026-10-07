@@ -22,17 +22,23 @@ function init() {
   const errorEl = document.getElementById("formError");
   const submitBtn = document.getElementById("submitBtn");
   let photoFile = null;
+  let photoPreviewUrl = null;
 
-  photoBtn.addEventListener("click", () => photoInput.click());
+  photoBtn.addEventListener("click", (event) => {
+    if (event.target !== photoInput) photoInput.click();
+  });
 
   photoInput.addEventListener("change", () => {
     const file = photoInput.files?.[0];
     if (!file) return;
     photoFile = file;
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
+    const existingImg = photoBtn.querySelector("img");
+    const img = existingImg || document.createElement("img");
+    if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    photoPreviewUrl = URL.createObjectURL(file);
+    img.src = photoPreviewUrl;
     img.alt = "Foto do pet";
-    document.getElementById("photoPlaceholderIcon").replaceWith(img);
+    if (!existingImg) document.getElementById("photoPlaceholderIcon").replaceWith(img);
   });
 
   form.addEventListener("submit", async (e) => {

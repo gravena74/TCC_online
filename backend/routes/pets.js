@@ -39,13 +39,13 @@ function toBoolFlag(value) {
 
 // GET /api/pets
 router.get("/", asyncHandler(async (req, res) => {
-  const pets = await db.all(`SELECT * FROM pets WHERE user_id = ? ORDER BY created_at DESC`, [req.userId]);
+  const pets = await db.all(`SELECT * FROM pets WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC`, [req.userId]);
   res.json({ pets });
 }));
 
 // GET /api/pets/:id
 router.get("/:id", asyncHandler(async (req, res) => {
-  const pet = await db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ?`, [req.params.id, req.userId]);
+  const pet = await db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ? AND deleted_at IS NULL`, [req.params.id, req.userId]);
   if (!pet) return res.status(404).json({ error: "Pet nao encontrado." });
   res.json({ pet });
 }));
@@ -80,7 +80,7 @@ router.post("/", upload.single("photo"), asyncHandler(async (req, res) => {
 
 // PUT /api/pets/:id
 router.put("/:id", upload.single("photo"), asyncHandler(async (req, res) => {
-  const pet = await db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ?`, [req.params.id, req.userId]);
+  const pet = await db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ? AND deleted_at IS NULL`, [req.params.id, req.userId]);
   if (!pet) return res.status(404).json({ error: "Pet nao encontrado." });
 
   const {
@@ -94,7 +94,7 @@ router.put("/:id", upload.single("photo"), asyncHandler(async (req, res) => {
        name = ?, breed = ?, age_years = ?, size = ?, photo_url = ?,
        has_fleas_ticks = ?, has_allergy = ?, allows_perfume = ?,
        been_to_petshop = ?, is_aggressive = ?, has_fur_knots = ?
-     WHERE id = ?`,
+     WHERE id = ? AND deleted_at IS NULL`,
     [
       name || pet.name,
       breed ?? pet.breed,
@@ -117,7 +117,8 @@ router.put("/:id", upload.single("photo"), asyncHandler(async (req, res) => {
 
 // DELETE /api/pets/:id
 router.delete("/:id", asyncHandler(async (req, res) => {
-  const result = await db.run(`DELETE FROM pets WHERE id = ? AND user_id = ?`, [req.params.id, req.userId]);
+  // Arquiva o pet: os JOINs do historico continuam preservando os atendimentos.
+  const result = await db.run(`UPDATE pets SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ? AND deleted_at IS NULL`, [req.params.id, req.userId]);
   if (result.changes === 0) return res.status(404).json({ error: "Pet nao encontrado." });
   res.json({ ok: true });
 }));

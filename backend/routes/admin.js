@@ -2,7 +2,8 @@ import { Router } from "express";
 import { db } from "../db/database.js";
 import { requireAdminAuth } from "../middleware/adminAuth.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
-import { nowInShop } from "../utils/time.js";
+import { nowInShop, isPast, isValidDate, isValidMonth, isValidSlot } from "../utils/time.js";
+import { APPOINTMENT_TRANSITIONS, serviceMatchesPet } from "../utils/appointments.js";
 
 const router = Router();
 router.use(requireAdminAuth);
@@ -63,6 +64,7 @@ router.get("/appointments/today", asyncHandler(async (req, res) => {
 // GET /api/admin/appointments?date=YYYY-MM-DD
 router.get("/appointments", asyncHandler(async (req, res) => {
   const date = req.query.date || todayIso();
+  if (!isValidDate(date)) return res.status(400).json({ error: "Data invalida." });
   const appointments = await db.all(
     `SELECT ${APPOINTMENT_DETAIL_SELECT}
      FROM appointments a
@@ -79,7 +81,8 @@ router.get("/appointments", asyncHandler(async (req, res) => {
 
 // GET /api/admin/appointments/calendar?month=YYYY-MM
 router.get("/appointments/calendar", asyncHandler(async (req, res) => {
-  const month = /^\d{4}-\d{2}$/.test(req.query.month || "") ? req.query.month : todayIso().slice(0, 7);
+  const month = req.query.month === undefined ? todayIso().slice(0, 7) : req.query.month;
+  if (!isValidMonth(month)) return res.status(400).json({ error: "Mes invalido (YYYY-MM)." });
   const rows = await db.all(
     `SELECT date, COUNT(*) as count
      FROM appointments
@@ -127,8 +130,35 @@ router.patch("/appointments/:id/status", asyncHandler(async (req, res) => {
     return res.status(400).json({ error: "Status invalido." });
   }
 
-  const result = await db.run(`UPDATE appointments SET status = ? WHERE id = ?`, [status, req.params.id]);
-  if (result.changes === 0) return res.status(404).json({ error: "Agendamento nao encontrado." });
+  // Ordem de travas igual a criacao: servico antes do agendamento/pet.
+  const outcome = await db.transaction(async (tx) => {
+    const reference = await tx.get(`SELECT service_id FROM appointments WHERE id = ?`, [req.params.id]);
+    if (!reference) return { status: 404, error: "Agendamento nao encontrado." };
+    const service = await tx.get(`SELECT * FROM services WHERE id = ? FOR UPDATE`, [reference.service_id]);
+    const current = await tx.get(`SELECT * FROM appointments WHERE id = ? FOR UPDATE`, [req.params.id]);
+    if (!current) return { status: 404, error: "Agendamento nao encontrado." };
+    if (current.status === status) return null;
+    if (!APPOINTMENT_TRANSITIONS[current.status]?.includes(status)) {
+      return { status: 409, error: "Esta transicao de status nao e permitida. Crie uma nova solicitacao para reagendar." };
+    }
+    if (status === "agendado") {
+      if (!isValidDate(current.date) || !isValidSlot(current.time) || isPast(current.date, current.time)) {
+        return { status: 409, error: "A data ou o horario desta solicitacao nao e mais valido." };
+      }
+      const pet = await tx.get(`SELECT * FROM pets WHERE id = ? AND deleted_at IS NULL FOR UPDATE`, [current.pet_id]);
+      if (!pet || !service || !serviceMatchesPet(service, pet)) {
+        return { status: 409, error: "O pet ou o servico desta solicitacao precisa ser atualizado." };
+      }
+      const conflict = await tx.get(
+        `SELECT id FROM appointments WHERE service_id = ? AND date = ? AND time = ? AND id <> ? AND status NOT IN ('cancelado', 'recusado') FOR UPDATE`,
+        [current.service_id, current.date, current.time, current.id]
+      );
+      if (conflict) return { status: 409, error: "Este horario ja possui outra reserva." };
+    }
+    await tx.run(`UPDATE appointments SET status = ? WHERE id = ?`, [status, current.id]);
+    return null;
+  });
+  if (outcome) return res.status(outcome.status).json({ error: outcome.error });
 
   const appointment = await db.get(
     `SELECT ${APPOINTMENT_DETAIL_SELECT}

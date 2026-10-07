@@ -1,3 +1,4 @@
+import { escapeHtml } from "../../js/html.js";
 import { requireAdminAuth } from "./admin-auth.js";
 import { renderAdminLayout } from "./admin-layout.js";
 import { adminApi } from "./admin-api.js";
@@ -120,13 +121,13 @@ function init() {
       dayListEl.innerHTML = appointments
         .map(
           (a) => `
-          <div class="admin-day-appointment" data-id="${a.id}" style="cursor: pointer;">
+          <div class="admin-day-appointment" data-id="${escapeHtml(a.id)}" style="cursor: pointer;">
             <div class="admin-day-appointment__top">
-              <span class="admin-day-appointment__time">${a.time}</span>
-              <span class="admin-badge admin-badge--${a.status}">${APPOINTMENT_STATUS_LABEL[a.status] || a.status}</span>
+              <span class="admin-day-appointment__time">${escapeHtml(a.time)}</span>
+              <span class="admin-badge admin-badge--${escapeHtml(a.status)}">${escapeHtml(APPOINTMENT_STATUS_LABEL[a.status] || a.status)}</span>
             </div>
-            <strong>${a.client_name || "—"}</strong>
-            <span class="admin-day-appointment__meta">${a.pet_name} · ${a.service_name} · ${formatCents(a.total_cents)}</span>
+            <strong>${escapeHtml(a.client_name || "—")}</strong>
+            <span class="admin-day-appointment__meta">${escapeHtml(a.pet_name)} · ${escapeHtml(a.service_name)} · ${escapeHtml(formatCents(a.total_cents))}</span>
           </div>
         `
         )

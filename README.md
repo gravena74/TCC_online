@@ -59,6 +59,12 @@ npm install
 
 Crie um arquivo `.env` (não versionado) com:
 
+Para a configuração local, `npm run setup:env` cria esse arquivo a partir de `.env.example`
+com um `JWT_SECRET` aleatório privado. Não sobrescreve um `.env` existente. Se já houver
+um arquivo com o segredo antigo, gere um novo com
+`node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`
+e atualize `JWT_SECRET` no arquivo. Em hospedagem, configure o segredo nas variáveis do serviço.
+
 ```
 DB_HOST=...
 DB_PORT=3306
@@ -66,8 +72,8 @@ DB_USER=...
 DB_PASSWORD=...
 DB_NAME=cafofo_do_pet
 PORT=3333
+JWT_SECRET=<segredo-privado-aleatorio-de-pelo-menos-32-bytes>
 # opcionais:
-# JWT_SECRET=troque-este-segredo-em-producao
 # ADMIN_DEFAULT_PASSWORD=admin123
 ```
 
@@ -99,7 +105,7 @@ O XAMPP fornece o **MySQL** (banco) e o **Apache** (frontend estático); a API c
 Node/Express.
 
 1. No painel do XAMPP, inicie **Apache** e **MySQL**.
-2. Backend: `cd backend && npm install && cp .env.example .env && npm run dev`.
+2. Backend: `cd backend && npm install && npm run setup:env && npm run dev`.
    O `.env.example` já vem com os padrões do XAMPP (`root`, sem senha) e o banco
    `cafofo_do_pet` é criado automaticamente na primeira execução (tabelas + seed também).
    Veja/edite os dados em http://localhost/phpmyadmin.
@@ -325,7 +331,7 @@ erDiagram
 | `DB_PASSWORD` | sim | Senha do MySQL |
 | `DB_NAME` | sim | Nome do banco |
 | `PORT` | não (padrão 3333) | Porta em que a API sobe |
-| `JWT_SECRET` | recomendada em produção | Segredo de assinatura dos tokens JWT (cliente e admin) |
+| `JWT_SECRET` | sim | Segredo privado aleatório de pelo menos 32 bytes. A API rejeita configuração ausente/curta e o segredo público antigo. Trocar o segredo invalida sessões anteriores. |
 | `ADMIN_DEFAULT_PASSWORD` | não (padrão `admin123`) | Senha do admin criado pelo seed, se ainda não existir nenhum admin |
 
 ## Login do cliente
@@ -342,7 +348,7 @@ reintroduza uma verificação (SMS/WhatsApp) antes de uso real.
 | POST | `/api/auth/login` | — | Loga/cria usuário pelo telefone, devolve JWT |
 | GET/PATCH | `/api/auth/me` | cliente | Perfil do usuário logado |
 | GET/POST | `/api/pets` | cliente | Lista/cria pets (com foto) |
-| PUT/DELETE | `/api/pets/:id` | cliente | Edita/remove pet |
+| PUT/DELETE | `/api/pets/:id` | cliente | Edita/arquiva pet; preserva atendimentos e histórico financeiro |
 | GET/POST | `/api/pets/:petId/vaccines` | cliente | Vacinas de um pet |
 | PATCH/DELETE | `/api/vaccines/:id` | cliente | Edita/remove vacina |
 | GET | `/api/services` | — | Catálogo de serviços |

@@ -22,7 +22,11 @@ export function getBooking() {
 }
 
 export function updateBooking(partial) {
-  const next = { ...getBooking(), ...partial };
+  const current = getBooking();
+  const changedPet = partial.pet &&
+    (partial.pet.id !== current.pet?.id || partial.pet.size !== current.pet?.size);
+  // Toda escolha posterior deve ser refeita ao trocar o pet ou seu porte.
+  const next = { ...(changedPet ? initialBooking : current), ...partial };
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   return next;
 }

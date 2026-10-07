@@ -1,3 +1,4 @@
+import { escapeHtml } from "../../js/html.js";
 import { requireAdminAuth } from "./admin-auth.js";
 import { renderAdminLayout } from "./admin-layout.js";
 import { adminApi } from "./admin-api.js";
@@ -49,18 +50,18 @@ function renderToday(date, appointments) {
   document.getElementById("todayTableBody").innerHTML = appointments
     .map(
       (a) => `
-      <tr data-id="${a.id}">
-        <td><strong>${a.time}</strong></td>
+      <tr data-id="${escapeHtml(a.id)}">
+        <td><strong>${escapeHtml(a.time)}</strong></td>
         <td>
           <div class="admin-table__cell-main">
-            <strong>${a.client_name || "—"}</strong>
-            <span>${a.client_phone || ""}</span>
+            <strong>${escapeHtml(a.client_name || "—")}</strong>
+            <span>${escapeHtml(a.client_phone || "")}</span>
           </div>
         </td>
-        <td>${a.pet_name}</td>
-        <td>${a.service_name}</td>
-        <td>${formatCents(a.total_cents)}</td>
-        <td><span class="admin-badge admin-badge--${a.status}">${APPOINTMENT_STATUS_LABEL[a.status] || a.status}</span></td>
+        <td>${escapeHtml(a.pet_name)}</td>
+        <td>${escapeHtml(a.service_name)}</td>
+        <td>${escapeHtml(formatCents(a.total_cents))}</td>
+        <td><span class="admin-badge admin-badge--${escapeHtml(a.status)}">${escapeHtml(APPOINTMENT_STATUS_LABEL[a.status] || a.status)}</span></td>
       </tr>
     `
     )
@@ -87,17 +88,17 @@ function renderPending(appointments) {
     .slice(0, 6)
     .map(
       (a) => `
-      <tr data-id="${a.id}">
+      <tr data-id="${escapeHtml(a.id)}">
         <td>
           <div class="admin-table__cell-main">
-            <strong>${a.client_name || "—"}</strong>
-            <span>${a.client_phone || ""}</span>
+            <strong>${escapeHtml(a.client_name || "—")}</strong>
+            <span>${escapeHtml(a.client_phone || "")}</span>
           </div>
         </td>
-        <td>${a.pet_name}</td>
-        <td>${a.service_name}</td>
-        <td>${formatDateLong(a.date)} às ${a.time}</td>
-        <td>${formatCents(a.total_cents)}</td>
+        <td>${escapeHtml(a.pet_name)}</td>
+        <td>${escapeHtml(a.service_name)}</td>
+        <td>${escapeHtml(formatDateLong(a.date))} às ${escapeHtml(a.time)}</td>
+        <td>${escapeHtml(formatCents(a.total_cents))}</td>
         <td>
           <button type="button" class="admin-icon-btn admin-icon-btn--approve" data-action="agendado" title="Aceitar">
             <span class="material-symbols-rounded" aria-hidden="true">check</span>

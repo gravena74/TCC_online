@@ -95,6 +95,7 @@ const SCHEMA_STATEMENTS = [
     been_to_petshop   TINYINT(1),
     is_aggressive     TINYINT(1),
     has_fur_knots     TINYINT(1),
+    deleted_at        DATETIME NULL,
     created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) ENGINE=InnoDB`,
@@ -188,6 +189,7 @@ export async function initDatabase() {
 
   // Migracao leve: adiciona as novas perguntas de cadastro em bases ja existentes.
   const newPetColumns = [
+    "deleted_at DATETIME NULL",
     "has_fleas_ticks TINYINT(1)",
     "has_allergy TINYINT(1)",
     "allows_perfume TINYINT(1)",

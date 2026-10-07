@@ -51,7 +51,7 @@ export async function seed() {
     `INSERT INTO admins (id, username, password_hash, name) VALUES (?, ?, ?, ?)`,
     [uuid(), DEFAULT_ADMIN_USERNAME, passwordHash, "Administrador"]
   );
-  console.log(`Seed: admin padrao criado (usuario: ${DEFAULT_ADMIN_USERNAME}, senha: ${DEFAULT_ADMIN_PASSWORD}).`);
+  console.log(`Seed: admin padrao criado (usuario: ${DEFAULT_ADMIN_USERNAME}).`);
 }
 
 // Permite rodar `npm run seed` diretamente, alem de ser importado pelo server.js

@@ -2,6 +2,7 @@ import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { getBooking, resetBooking } from "./booking.js";
 import { formatCents, formatDateLong } from "./format.js";
+import { escapeHtml } from "./html.js";
 
 const CHECKIN_LABEL = {
   leva_ao_pet_shop: "Você leva o pet ao pet shop",
@@ -26,7 +27,7 @@ if (user) {
 
 function init(booking) {
   document.getElementById("petPhoto").innerHTML = booking.pet?.photo_url
-    ? `<img src="${resolveAssetUrl(booking.pet.photo_url)}" alt="${booking.pet.name}">`
+    ? `<img src="${escapeHtml(resolveAssetUrl(booking.pet.photo_url))}" alt="${escapeHtml(booking.pet.name)}">`
     : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
   document.getElementById("petName").textContent = booking.pet?.name || "";
   document.getElementById("serviceLine").textContent =
@@ -40,8 +41,8 @@ function init(booking) {
   if (booking.address) {
     document.getElementById("addressCard").style.display = "block";
     document.getElementById("addressLine").innerHTML =
-      `${booking.address.street}, ${booking.address.number} — ${booking.address.neighborhood}<br>` +
-      `${booking.address.city}/${booking.address.state} · CEP ${booking.address.cep}`;
+      `${escapeHtml(booking.address.street)}, ${escapeHtml(booking.address.number)} — ${escapeHtml(booking.address.neighborhood)}<br>` +
+      `${escapeHtml(booking.address.city)}/${escapeHtml(booking.address.state)} · CEP ${escapeHtml(booking.address.cep)}`;
   }
 
   const needsFee = booking.checkinMode === "busca_em_casa" || booking.checkoutMode === "entrega_em_casa";

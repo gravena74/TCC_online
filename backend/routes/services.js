@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/database.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
-import { isPast } from "../utils/time.js";
+import { isPast, isValidDate } from "../utils/time.js";
 
 const router = Router();
 
@@ -16,7 +16,9 @@ router.get("/", asyncHandler(async (req, res) => {
 // removendo horarios ja ocupados por outros agendamentos daquele servico).
 router.get("/:id/slots", asyncHandler(async (req, res) => {
   const { date } = req.query;
-  if (!date) return res.status(400).json({ error: "Informe a data (YYYY-MM-DD)." });
+  if (!isValidDate(date)) return res.status(400).json({ error: "Informe uma data valida (YYYY-MM-DD)." });
+  const service = await db.get(`SELECT id FROM services WHERE id = ?`, [req.params.id]);
+  if (!service) return res.status(404).json({ error: "Servico nao encontrado." });
 
   const rows = await db.all(
     `SELECT time FROM appointments WHERE service_id = ? AND date = ? AND status NOT IN ('cancelado', 'recusado')`,

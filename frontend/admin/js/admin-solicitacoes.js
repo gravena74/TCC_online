@@ -1,3 +1,4 @@
+import { escapeHtml } from "../../js/html.js";
 import { requireAdminAuth } from "./admin-auth.js";
 import { renderAdminLayout } from "./admin-layout.js";
 import { adminApi } from "./admin-api.js";
@@ -46,13 +47,13 @@ function init() {
     tableBodyEl.innerHTML = appointments
       .map(
         (a) => `
-        <tr data-id="${a.id}">
-          <td><strong>${a.client_name || "—"}</strong></td>
-          <td>${a.pet_name}</td>
-          <td>${a.service_name}</td>
-          <td>${formatDateLong(a.date)} às ${a.time}</td>
-          <td>${formatCents(a.total_cents)}</td>
-          <td><span class="admin-badge admin-badge--${a.status}">${APPOINTMENT_STATUS_LABEL[a.status] || a.status}</span></td>
+        <tr data-id="${escapeHtml(a.id)}">
+          <td><strong>${escapeHtml(a.client_name || "—")}</strong></td>
+          <td>${escapeHtml(a.pet_name)}</td>
+          <td>${escapeHtml(a.service_name)}</td>
+          <td>${escapeHtml(formatDateLong(a.date))} às ${escapeHtml(a.time)}</td>
+          <td>${escapeHtml(formatCents(a.total_cents))}</td>
+          <td><span class="admin-badge admin-badge--${escapeHtml(a.status)}">${escapeHtml(APPOINTMENT_STATUS_LABEL[a.status] || a.status)}</span></td>
           <td>
             ${
               a.status === "em_analise"

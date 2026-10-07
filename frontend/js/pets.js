@@ -1,6 +1,7 @@
 import { api, resolveAssetUrl } from "./api.js";
 import { requireAuth } from "./guard.js";
 import { updateBooking } from "./booking.js";
+import { escapeHtml } from "./html.js";
 
 const isManageMode = new URLSearchParams(window.location.search).get("mode") === "manage";
 
@@ -75,15 +76,15 @@ function init() {
       card.className = `card pet-card${disableSelect ? " pet-card--booked" : ""}${active ? " pet-card--selected" : ""}`;
 
       const photo = pet.photo_url
-        ? `<img src="${resolveAssetUrl(pet.photo_url)}" alt="${pet.name}">`
+        ? `<img src="${escapeHtml(resolveAssetUrl(pet.photo_url))}" alt="${escapeHtml(pet.name)}">`
         : `<span class="material-symbols-rounded" aria-hidden="true">pets</span>`;
 
       card.innerHTML = `
         <button type="button" class="pet-card__select" ${disableSelect ? "disabled" : ""}>
           <div class="pet-card__photo">${photo}</div>
           <div class="pet-card__info">
-            <p class="pet-card__name">${pet.name}</p>
-            <p class="pet-card__meta">${pet.breed || "Sem raça definida"}${pet.age_years ? ` · ${pet.age_years} anos` : ""}</p>
+            <p class="pet-card__name">${escapeHtml(pet.name)}</p>
+            <p class="pet-card__meta">${escapeHtml(pet.breed || "Sem raça definida")}${pet.age_years ? ` · ${escapeHtml(pet.age_years)} anos` : ""}</p>
             ${
               isBooked
                 ? `<span class="pet-card__tag">${

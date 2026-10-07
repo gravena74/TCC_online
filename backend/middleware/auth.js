@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "troque-este-segredo-em-producao";
+import { JWT_SECRET } from "../utils/jwtConfig.js";
 
 export function signToken(user) {
   return jwt.sign({ sub: user.id, phone: user.phone }, JWT_SECRET, { expiresIn: "30d" });
@@ -15,9 +14,12 @@ export function requireAuth(req, res, next) {
   }
 
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] });
     if (payload.role === "admin") {
       return res.status(403).json({ error: "Acesso invalido para esta rota." });
+    }
+    if (typeof payload.sub !== "string" || !payload.sub) {
+      return res.status(401).json({ error: "Sessao invalida. Faca login novamente." });
     }
     req.userId = payload.sub;
     next();
