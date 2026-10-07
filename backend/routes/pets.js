@@ -21,7 +21,9 @@ const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) return cb(new Error("Envie um arquivo de imagem."));
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(Object.assign(new Error("Envie um arquivo de imagem."), { status: 400 }));
+    }
     cb(null, true);
   },
 });

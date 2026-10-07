@@ -47,8 +47,11 @@ app.use("/api", vaccinesRoutes);
 app.use((req, res) => res.status(404).json({ error: "Rota nao encontrada." }));
 
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: err.message || "Erro interno do servidor." });
+  // Erros de validacao (ex: upload que nao e imagem, arquivo grande demais no
+  // multer) sao culpa da requisicao: 400. O resto e erro interno: 500.
+  const status = err.status || (err.name === "MulterError" ? 400 : 500);
+  if (status === 500) console.error(err);
+  res.status(status).json({ error: err.message || "Erro interno do servidor." });
 });
 
 const PORT = process.env.PORT || 3333;

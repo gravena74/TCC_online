@@ -19,7 +19,7 @@ router.get("/:id/slots", asyncHandler(async (req, res) => {
   if (!date) return res.status(400).json({ error: "Informe a data (YYYY-MM-DD)." });
 
   const rows = await db.all(
-    `SELECT time FROM appointments WHERE service_id = ? AND date = ? AND status != 'cancelado'`,
+    `SELECT time FROM appointments WHERE service_id = ? AND date = ? AND status NOT IN ('cancelado', 'recusado')`,
     [req.params.id, date]
   );
   const taken = rows.map((r) => r.time);

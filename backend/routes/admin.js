@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db } from "../db/database.js";
 import { requireAdminAuth } from "../middleware/adminAuth.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
+import { nowInShop } from "../utils/time.js";
 
 const router = Router();
 router.use(requireAdminAuth);
@@ -10,8 +11,10 @@ const APPOINTMENT_STATUSES = ["em_analise", "agendado", "concluido", "cancelado"
 // Estados que contam como negocio confirmado (usados nos graficos/estatisticas).
 const CONFIRMED_STATUSES = "('agendado', 'concluido')";
 
+// "Hoje" no fuso do pet shop: toISOString() e UTC, entao a partir das 21h
+// (horario de Brasilia) o painel ja mostraria o dia seguinte.
 function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return nowInShop().date;
 }
 
 // Ultimos 12 meses no formato YYYY-MM, do mais antigo pro mais recente.

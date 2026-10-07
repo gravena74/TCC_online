@@ -22,18 +22,42 @@ const pool = mysql.createPool({
 
 // Camada de compatibilidade com a API que o resto do projeto ja usava
 // (node:sqlite / better-sqlite3): get/all/run, so que assincrona.
+// `conn` pode ser o pool ou uma conexao dedicada (dentro de uma transacao).
+function queryHelpers(conn) {
+  return {
+    async all(sql, params = []) {
+      const [rows] = await conn.query(sql, params);
+      return rows;
+    },
+    async get(sql, params = []) {
+      const [rows] = await conn.query(sql, params);
+      return rows[0];
+    },
+    async run(sql, params = []) {
+      const [result] = await conn.query(sql, params);
+      return { changes: result.affectedRows, lastInsertRowid: result.insertId };
+    },
+  };
+}
+
 export const db = {
-  async all(sql, params = []) {
-    const [rows] = await pool.query(sql, params);
-    return rows;
-  },
-  async get(sql, params = []) {
-    const [rows] = await pool.query(sql, params);
-    return rows[0];
-  },
-  async run(sql, params = []) {
-    const [result] = await pool.query(sql, params);
-    return { changes: result.affectedRows, lastInsertRowid: result.insertId };
+  ...queryHelpers(pool),
+
+  // Executa fn(tx) numa transacao em conexao dedicada: commit se fn terminar,
+  // rollback se lancar. tx tem a mesma API get/all/run.
+  async transaction(fn) {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      const result = await fn(queryHelpers(conn));
+      await conn.commit();
+      return result;
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
   },
 };
 

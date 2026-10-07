@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { db } from "../db/database.js";
 import { requireAuth } from "../middleware/auth.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
+import { geocode, distanceKm, STORE_LAT, STORE_LON, MAX_DISTANCE_KM } from "../utils/geo.js";
 
 const router = Router();
 router.use(requireAuth);
@@ -39,6 +40,11 @@ async function validateAgainstViaCep({ cep, street, neighborhood, city, state, n
     return "O bairro nao corresponde ao CEP informado.";
   }
   if (!/\p{L}/u.test(String(street || ""))) return "Informe uma rua valida.";
+
+  const coords = await geocode({ street, number, neighborhood, city, state });
+  if (coords && distanceKm(coords.lat, coords.lon, STORE_LAT, STORE_LON) > MAX_DISTANCE_KM) {
+    return `Endereco fora da area de atendimento (ate ${MAX_DISTANCE_KM} km da loja).`;
+  }
   return null;
 }
 

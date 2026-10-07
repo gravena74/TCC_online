@@ -40,30 +40,45 @@ router.post("/", asyncHandler(async (req, res) => {
   const pet = await db.get(`SELECT * FROM pets WHERE id = ? AND user_id = ?`, [pet_id, req.userId]);
   if (!pet) return res.status(404).json({ error: "Pet nao encontrado." });
 
-  const service = await db.get(`SELECT * FROM services WHERE id = ?`, [service_id]);
-  if (!service) return res.status(404).json({ error: "Servico nao encontrado." });
-
-  const conflict = await db.get(
-    `SELECT id FROM appointments WHERE service_id = ? AND date = ? AND time = ? AND status NOT IN ('cancelado', 'recusado')`,
-    [service_id, date, time]
-  );
-  if (conflict) return res.status(409).json({ error: "Este horario acabou de ser reservado. Escolha outro." });
-
   const needsPickupFee = checkin_mode === "busca_em_casa" || checkout_mode === "entrega_em_casa";
-  const pickupFee = needsPickupFee ? PICKUP_FEE_CENTS : 0;
-  const total = service.price_cents + pickupFee;
+  if (needsPickupFee) {
+    if (!address_id) {
+      return res.status(400).json({ error: "Informe o endereco para busca/entrega." });
+    }
+    const address = await db.get(`SELECT id FROM addresses WHERE id = ? AND user_id = ?`, [address_id, req.userId]);
+    if (!address) return res.status(404).json({ error: "Endereco nao encontrado." });
+  }
 
-  // Todo agendamento novo entra "em analise": o pet shop precisa conferir os
-  // dados do dono/pet antes de confirmar (vira "agendado") ou recusar.
+  // Verificacao de conflito e INSERT na mesma transacao, com a linha do servico
+  // travada (FOR UPDATE): requisicoes simultaneas para o mesmo servico esperam
+  // umas pelas outras, entao so a primeira consegue o horario.
   const id = uuid();
-  await db.run(
-    `INSERT INTO appointments
-      (id, user_id, pet_id, service_id, address_id, date, time, checkin_mode, checkout_mode,
-       status, service_price_cents, pickup_fee_cents, total_cents)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'em_analise', ?, ?, ?)`,
-    [id, req.userId, pet_id, service_id, address_id || null, date, time, checkin_mode, checkout_mode,
-     service.price_cents, pickupFee, total]
-  );
+  const outcome = await db.transaction(async (tx) => {
+    const service = await tx.get(`SELECT * FROM services WHERE id = ? FOR UPDATE`, [service_id]);
+    if (!service) return { status: 404, error: "Servico nao encontrado." };
+
+    const conflict = await tx.get(
+      `SELECT id FROM appointments WHERE service_id = ? AND date = ? AND time = ? AND status NOT IN ('cancelado', 'recusado')`,
+      [service_id, date, time]
+    );
+    if (conflict) return { status: 409, error: "Este horario acabou de ser reservado. Escolha outro." };
+
+    const pickupFee = needsPickupFee ? PICKUP_FEE_CENTS : 0;
+    const total = service.price_cents + pickupFee;
+
+    // Todo agendamento novo entra "em analise": o pet shop precisa conferir os
+    // dados do dono/pet antes de confirmar (vira "agendado") ou recusar.
+    await tx.run(
+      `INSERT INTO appointments
+        (id, user_id, pet_id, service_id, address_id, date, time, checkin_mode, checkout_mode,
+         status, service_price_cents, pickup_fee_cents, total_cents)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'em_analise', ?, ?, ?)`,
+      [id, req.userId, pet_id, service_id, needsPickupFee ? address_id : null, date, time, checkin_mode, checkout_mode,
+       service.price_cents, pickupFee, total]
+    );
+    return null;
+  });
+  if (outcome) return res.status(outcome.status).json({ error: outcome.error });
 
   const appointment = await db.get(
     `SELECT a.*, p.name as pet_name, s.name as service_name

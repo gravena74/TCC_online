@@ -99,17 +99,25 @@ function init(booking) {
     addressOutOfRange = false;
     distanceStatus.style.display = "none";
 
-    const query = [street, numberInput.value.trim(), neighborhoodInput.value.trim(), city, stateInput.value.trim(), "Brasil"]
-      .filter(Boolean)
-      .join(", ");
+    // Do mais preciso ao mais genérico. O bairro fica de fora: o OpenStreetMap não
+    // conhece a maioria dos bairros do ViaCEP e, com ele, a busca volta vazia
+    // (e a distância até a loja não seria verificada). Mesma ordem de backend/utils/geo.js.
+    const state = stateInput.value.trim();
+    const queries = [
+      [street, numberInput.value.trim(), city, state, "Brasil"],
+      [street, city, state, "Brasil"],
+    ].map((parts) => parts.filter(Boolean).join(", "));
 
     try {
-      const res = await fetch(
-        `${NOMINATIM_URL}/search?format=jsonv2&limit=1&countrycodes=br&q=${encodeURIComponent(query)}`
-      );
-      const results = await res.json();
-      if (results && results[0]) {
-        showMap(Number(results[0].lat), Number(results[0].lon), results[0].display_name);
+      for (const query of queries) {
+        const res = await fetch(
+          `${NOMINATIM_URL}/search?format=jsonv2&limit=1&countrycodes=br&q=${encodeURIComponent(query)}`
+        );
+        const results = await res.json();
+        if (results && results[0]) {
+          showMap(Number(results[0].lat), Number(results[0].lon), results[0].display_name);
+          return;
+        }
       }
     } catch {
       // Mapa é um complemento visual — se a geocodificação falhar, o formulário
